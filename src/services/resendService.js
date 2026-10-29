@@ -148,35 +148,35 @@ const sendBookingLinkEmail = async (toEmail, firstName) => {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">KIAAN<span>TECHNOLOGIES</span></div>
-            <h1>IT & Software Engineering Services</h1>
+            <div class="logo">A³<span>Consultancy</span></div>
+            <h1>Spain Visa & Relocation Services</h1>
           </div>
           <div class="content">
             <div class="greeting">Hi ${name},</div>
-            <p>We received your inquiry regarding custom software development, cloud infrastructure, and AI engineering services. To help us understand your technical scope and assign the best solution architect to your project, please complete your details and book your discovery session.</p>
+            <p>We received your inquiry regarding Spain relocation and visa services. To help us understand your goals and assign the best agent to your profile, please complete your details and book your free consultation time slot.</p>
             
             <div class="btn-container">
-              <a href="${bookingUrl}" class="btn">Book Architecture Discovery Session</a>
+              <a href="${bookingUrl}" class="btn">Book Free Eligibility Assessment</a>
             </div>
 
             <div class="features">
               <div class="features-title">What happens next:</div>
               <div class="feature-item">
-                <span class="feature-icon">✓</span> 30-minute technical architecture review with a solution architect.
+                <span class="feature-icon">✓</span> Free 20-minute eligibility review with a Spain specialist.
               </div>
               <div class="feature-item">
-                <span class="feature-icon">✓</span> Tailored technical scope & milestone delivery roadmap.
+                <span class="feature-icon">✓</span> Personalized requirements checklist for your program.
               </div>
               <div class="feature-item">
-                <span class="feature-icon">✓</span> Direct access to your secure client engineering portal.
+                <span class="feature-icon">✓</span> Direct access to your secure client portal.
               </div>
             </div>
             
             <p>If you have any questions, feel free to reply directly to this email.</p>
-            <p>Best regards,<br><strong>Kiaan Technologies Engineering Team</strong></p>
+            <p>Best regards,<br><strong>AAA Business Consultancy Team</strong></p>
           </div>
           <div class="footer">
-            © 2026 Kiaan Technologies. All rights reserved.<br>
+            © 2026 AAA Business Consultancy LLC. All rights reserved.<br>
             Business Village, Block B, 4th Floor, Office F09, Deira, Dubai, UAE<br>
             <a href="https://aaabusinessconsultancy.com">Visit our website</a>
           </div>

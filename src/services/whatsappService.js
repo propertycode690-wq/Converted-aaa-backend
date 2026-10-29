@@ -135,64 +135,64 @@ exports.sendWhatsAppMessage = async ({ to, templateName, contentSid: customConte
 
 Dear *{{1}}*,
 
-Thank you for contacting Kiaan Technologies regarding *{{2}}*.
+Thank you for contacting AAA Business Consultancy regarding *{{2}}*.
 
-Our solutions engineering team has received your inquiry and will connect with you directly on WhatsApp / Phone shortly.
+Our specialist team has received your inquiry and will connect with you directly on WhatsApp / Phone shortly.
 
-💬 *Direct Inquiries:* https://wa.me/971509554142
+💬 *Direct WhatsApp:* https://wa.me/971509554142
 
 ─────────────
-*Kiaan Technologies*`,
+*AAA Business Consultancy*`,
           meeting_booked: `${svcInfo.icon} *Inquiry Received!*
 
 Dear *{{1}}*,
 
-Thank you for reaching out to Kiaan Technologies!
+Thank you for reaching out to AAA Business Consultancy!
 
-We have successfully received your inquiry for *{{2}}*. One of our lead solutions architects will review your details and contact you directly shortly.
+We have successfully received your inquiry for *{{2}}*. One of our dedicated specialists will review your details and contact you directly on WhatsApp / Phone shortly.
 
 💬 *Chat with Us on WhatsApp:* https://wa.me/971509554142
 
 ─────────────
-*Kiaan Technologies*`,
-          automated_first_response: 'Thank you for contacting Kiaan Technologies. One of our solutions architects will connect with you shortly on WhatsApp.',
-          consultation_scheduled_confirmation: 'Hello {{1}}, thank you for contacting Kiaan Technologies! We have received your inquiry and our engineering team will get in touch with you shortly.',
-          consultation_no_show_cancelled: 'Hello {{1}}, your Technical Discovery Session has been cancelled because you did not join within 10 minutes of the scheduled time. Please reply to reschedule.',
-          payment_pending_reminder: 'Hi {{1}}, this is a reminder that payment is pending for IT Project Invoice #{{2}}.',
-          payment_drip_discount: 'Hello {{1}}, use discount code EARLYBIRD to complete your retainer for Project Invoice #{{2}} with a special credit! Valid for 24 hours only.',
-          google_review: 'Hello, \n\nWe hope your technical consultation with Kiaan Technologies was valuable! 🚀\n\nIf you enjoyed your experience with our engineering team, could you please spare 30 seconds to share your feedback on Google? Your review means the world to us.\n\n⭐ Leave your Google Review here:\nhttps://g.page/r/CXugL6bqOJCXEAI/review\n\nThank you so much for your support!',
-          aaa_greeting: 'Hello👋 \n\nWelcome to Kiaan Technologies! \n\nWe provide end-to-end custom software development, cloud infrastructure, AI automation, and enterprise web solutions. \n\nReply Hi to get started.',
-          t1: 'Hello👋 \n\nWelcome to Kiaan Technologies! \n\nWe provide end-to-end custom software development, cloud infrastructure, AI automation, and enterprise web solutions. \n\nReply Hi to get started.',
-          greet: 'Hello👋 \n\nWelcome to Kiaan Technologies! \n\nWe provide end-to-end custom software development, cloud infrastructure, AI automation, and enterprise web solutions. \n\nReply Hi to get started.',
-          aaa_meeting_reminder_24h: 'Hello {{1}},\n\nThank you for contacting Kiaan Technologies! Our solutions team has received your project inquiry and will connect with you shortly.',
-          aaa_meeting_reminder_1h: 'Hello {{1}},\n\nThank you for contacting Kiaan Technologies! Our solutions team has received your project inquiry and will connect with you shortly.',
-          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started setting up your IT project onboarding but haven\'t completed the retainer payment yet.\n\nTo lock in your dedicated engineering sprint slot and begin scoping today, please complete your payment:\n\n🔗 Payment Link: {{2}}\n\nIf you have any questions, please reply directly. We are here to help!\n\nBest regards,\nKiaan Technologies Team',
-          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your project initiation retainer invoice is still pending.\n\nTo ensure your preferred sprint kickoff date, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nOur team is ready to begin architecture and scoping as soon as payment is confirmed.\n\nBest regards,\nKiaan Technologies Team',
-          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your project invoice has been pending for 2 days.\n\nTo proceed with your custom software development milestones, please complete the final steps of your retainer payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nKiaan Technologies Team',
-          meeting_cancelled: `❌ *${svcInfo.title} Discovery Cancelled*
+*AAA Business Consultancy*`,
+          automated_first_response: 'Thank you for contacting AAA Business Consultancy. One of our specialists will connect with you shortly on WhatsApp.',
+          consultation_scheduled_confirmation: 'Hello {{1}}, thank you for contacting AAA Business Consultancy! We have received your inquiry and our team will get in touch with you shortly.',
+          consultation_no_show_cancelled: 'Hello {{1}}, your Free Eligibility Assessment has been cancelled because you did not join within 10 minutes of the scheduled time. Due to high demand, missed appointments cannot be rescheduled.',
+          payment_pending_reminder: 'Hi {{1}}, this is a reminder that payment is pending for Invoice #{{2}}.',
+          payment_drip_discount: 'Hello {{1}}, use discount code CEO24H to complete your payment for Invoice #{{2}} with a special discount! Valid for 24 hours only.',
+          google_review: 'Hello, \n\nWe hope your consultation with AAA Business Consultancy was helpful! 🇪🇸\n\nIf you enjoyed your experience with our advisors, could you please spare 30 seconds to share your feedback on Google? Your review means the world to us and helps others find us.\n\n⭐ Leave your Google Review here:\nhttps://g.page/r/CXugL6bqOJCXEAI/review\n\nThank you so much for your support!',
+          aaa_greeting: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Spain Visa, Residency & Relocation requirements. \n\nReply Hi to get started.',
+          t1: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Spain Visa, Residency & Relocation requirements. \n\nReply Hi to get started.',
+          greet: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Spain Visa, Residency & Relocation requirements. \n\nReply Hi to get started.',
+          aaa_meeting_reminder_24h: 'Hello {{1}},\n\nThank you for contacting AAA Business Consultancy! Our specialists have received your inquiry and will connect with you shortly.',
+          aaa_meeting_reminder_1h: 'Hello {{1}},\n\nThank you for contacting AAA Business Consultancy! Our specialists have received your inquiry and will connect with you shortly.',
+          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started setting up your Spain Visa / Relocation application but haven\'t completed the payment yet.\n\nTo secure your assigned immigration specialist and begin processing today, please complete your payment:\n\n🔗 Payment Link: {{2}}\n\nIf you have any questions, please reply directly. We are here to help!\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your relocation package invoice is still pending. It has been 24 hours since your account initialization.\n\nTo avoid losing your slot and priority file review, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nOur team is ready to begin your visa submission steps as soon as payment is confirmed.\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your invoice has been pending for 2 days.\n\nIf you are ready to relocate or secure your Spanish visa/residency, please complete the final steps of your application fee payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nAAA Business Consultancy Team',
+          meeting_cancelled: `❌ *${svcInfo.title} Cancelled*
 
 Dear *{{1}}*,
 
-Your ${svcInfo.assessmentName || 'Technical Discovery Session'} scheduled for *{{2}}* at *{{3}}* has been cancelled.
+Your Free ${svcInfo.assessmentName} scheduled for *{{2}}* at *{{3}}* (UAE) has been cancelled.
 
 If you would like to reschedule your consultation, please click the link below to select a new date and time slot:
 
-🔗 *Reschedule Session:* {{4}}
+🔗 *Rebook Consultation:* {{4}}
 
 ─────────────
-*Kiaan Technologies*`,
-          meeting_rescheduled: `🔄 *${svcInfo.title} Discovery Rescheduled*
+*AAA Business Consultancy*`,
+          meeting_rescheduled: `🔄 *${svcInfo.title} Rescheduled*
 
 Dear *{{1}}*,
 
-Your ${svcInfo.assessmentName || 'Technical Discovery Session'} has been rescheduled successfully!
+Your Free ${svcInfo.assessmentName} has been rescheduled successfully!
 
 📅 *New Date:* {{2}}
-⏰ *New Time:* {{3}}
+⏰ *New Time:* {{3}} (UAE)
 🔗 *Meeting Join Link:* {{4}}
 
 ─────────────
-*Kiaan Technologies*`
+*AAA Business Consultancy*`
         };
         templateText = fallbacks[templateName] || `Template: ${templateName}`;
       }
@@ -321,15 +321,15 @@ Your ${svcInfo.assessmentName || 'Technical Discovery Session'} has been resched
 
       if (!templateText) {
         const fallbacks = {
-          automated_first_response: 'Thank you for contacting Kiaan Technologies regarding our IT & Software Engineering Services. To schedule an architecture discovery session, please contact us on WhatsApp or visit our portal.',
-          consultation_scheduled_confirmation: 'Hello {{1}}, your IT Architecture & Scoping Session is scheduled on {{2}} at {{3}}.',
-          consultation_no_show_cancelled: 'Hello {{1}}, your Discovery Session has been cancelled because you did not join within 10 minutes of the scheduled time. Please reach out to your solutions engineer to reschedule.',
+          automated_first_response: 'Thank you for contacting AAA Business Consultancy regarding Spain Visa & Residency Services. To Book Your Free Eligibility Assessment & Verification Please Contact Us on Whatsapp: https://wa.me/971509554142?text=I%20want%20to%20book%20an%20assessment%20from%20TikTok',
+          consultation_scheduled_confirmation: 'Hello {{1}}, your Spain Visa Consultation is scheduled on {{2}} at {{3}} (UAE).',
+          consultation_no_show_cancelled: 'Hello {{1}}, your Free Eligibility Assessment has been cancelled because you did not join within 10 minutes of the scheduled time. Due to high demand, missed appointments cannot be rescheduled.',
           payment_pending_reminder: 'Hi {{1}}, this is a reminder that payment is pending for Invoice #{{2}}.',
           payment_drip_discount: 'Hello {{1}}, use discount code CEO24H to complete your payment for Invoice #{{2}} with a special discount! Valid for 24 hours only.',
-          google_review: 'We hope your discovery session with Kiaan Technologies was valuable! If you enjoyed your experience with our team, could you please take 30 seconds to share your review on Clutch or Google? Thank you!',
-          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started onboarding for your IT solutions project but haven\'t completed the payment yet.\n\nTo lock in your dedicated engineering sprint allocation, please finalize your payment:\n\n🔗 Payment Link: {{2}}\n\nBest regards,\nKiaan Technologies Team',
-          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your IT service retainer invoice is still pending. It has been 24 hours since your account initialization.\n\nTo ensure timely sprint kickoff and developer allocation, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nBest regards,\nKiaan Technologies Team',
-          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your project invoice has been pending for 2 days.\n\nTo confirm your dedicated pod kickoff date, please complete payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nKiaan Technologies Team'
+          google_review: 'We hope your consultation with AAA Business Consultancy was helpful! 🇪🇸\n\nIf you enjoyed your experience with our advisors, could you please spare 30 seconds to share your feedback on Google? Your review means the world to us and helps others find us.\n\n⭐ Leave your Google Review here:\nhttps://g.page/r/CXugL6bqOJCXEAI/review\n\nThank you so much for your support!',
+          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started setting up your Spain Visa / Relocation application but haven\'t completed the payment yet.\n\nTo secure your assigned immigration specialist and begin processing today, please complete your payment:\n\n🔗 Payment Link: {{2}}\n\nIf you have any questions, please reply directly. We are here to help!\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your relocation package invoice is still pending. It has been 24 hours since your account initialization.\n\nTo avoid losing your slot and priority file review, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nOur team is ready to begin your visa submission steps as soon as payment is confirmed.\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your invoice has been pending for 2 days.\n\nIf you are ready to relocate or secure your Spanish visa/residency, please complete the final steps of your application fee payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nAAA Business Consultancy Team'
         };
         templateText = fallbacks[templateName] || `Template: ${templateName}`;
       }
@@ -445,7 +445,7 @@ exports.sendPaymentSuccessWhatsApp = async ({ client, lead, phone, paymentId, am
       if (rawService && !rawService.startsWith('pkg_') && !rawService.startsWith('a5459021')) {
         return rawService;
       }
-      return 'Custom Software & IT Solutions';
+      return 'Spain Visa & Residency Service';
     };
 
     const displayService = resolvePackageTitle(serviceType || client?.serviceType || lead?.serviceType, client?.packageId);
@@ -728,13 +728,13 @@ exports.sendInvoiceWhatsApp = async ({ client, amount, discount, netAmount, serv
     const { sendCustomWhatsApp } = require('./chatbotService');
     const clientName = `${client?.firstName || ''} ${client?.lastName || ''}`.trim() || 'Valued Client';
     const formattedAmount = Number(netAmount || amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const displayService = serviceType || client?.serviceType || 'IT Services / Custom Engineering';
+    const displayService = serviceType || client?.serviceType || 'Spain Visa / Relocation Service';
 
-    const messageBody = `📄 *Invoice & Payment Request - Kiaan Technologies*
+    const messageBody = `📄 *Invoice & Payment Request - AAA Business Consultancy*
 
 Dear *${clientName}*,
 
-An invoice has been generated for your IT engagement. Please find the details below:
+An invoice has been generated for your application. Please find the details below:
 
 📋 *Invoice Details:*
 • 📦 *Service:* ${displayService}
@@ -744,7 +744,7 @@ ${checkoutUrl ? `• 🔗 *Complete Payment / View Invoice:* ${checkoutUrl}` : '
 If you have any questions, feel free to reply directly to this message.
 
 Best regards,
-*Kiaan Technologies Team*`;
+*AAA Business Consultancy Team* 🇪🇸`;
 
     await sendCustomWhatsApp(phone, messageBody);
   } catch (err) {
@@ -765,7 +765,7 @@ exports.sendRefundProcessedWhatsApp = async ({ client, amount, category, payoutM
     const formattedAmount = Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const methodStr = payoutMethod || 'Direct Bank Transfer / Card Refund';
     const refStr = transactionRef || 'N/A';
-    const refundCat = category || 'IT Service Agreement Settlement';
+    const refundCat = category || 'Spain Visa Money-Back Guarantee';
 
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');

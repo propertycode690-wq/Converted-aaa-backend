@@ -196,8 +196,8 @@ const createLeadNotification = async ({ leadName, email, phone, country, service
     }
 
     const body = isBooking
-      ? `${leadName || email} (${country || 'Global'}) booked a Discovery Session for ${serviceCategory || 'IT Services'} on ${formattedDate}.`
-      : `${leadName || email} (${country || 'Global'}) submitted a project inquiry for ${serviceCategory || 'IT Services'}.`;
+      ? `${leadName || email} (${country || 'Global'}) booked a Free Assessment for ${serviceCategory || 'Spain Visa'} on ${formattedDate}.`
+      : `${leadName || email} (${country || 'Global'}) submitted a lead for ${serviceCategory || 'Spain Visa'}.`;
 
     const notificationEntries = staffMembers.map(staff => ({
       userId: staff.id,

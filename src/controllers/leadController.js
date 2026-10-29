@@ -326,14 +326,7 @@ const createLead = async (req, res) => {
       }
     }
 
-    const enrichedQualification = {
-      ...(typeof qualificationData === 'object' && qualificationData !== null ? qualificationData : {}),
-      companyName: companyName || qualificationData?.companyName || null,
-      dealValue: (dealValue !== undefined && dealValue !== null && dealValue !== '') ? Number(dealValue) : null,
-      currency: currency || 'USD'
-    };
-
-    // Create new lead (compatible with active Prisma schema)
+    // Create new lead (compatible with Railway schema)
     lead = await prisma.lead.create({
         data: {
           firstName: firstName || '',
@@ -352,11 +345,14 @@ const createLead = async (req, res) => {
           meetingPreferredTime,
           meetingPreferredLanguage,
           meetingNotes,
-          qualificationData: enrichedQualification,
-          assignedTo: assignedToId ? { connect: { id: assignedToId } } : undefined,
+          qualificationData: qualificationData || undefined,
+          assignedToId,
           assignedAt: assignedToId ? new Date() : null,
           preferableArea: preferableArea || null,
-          budget: budget || (dealValue ? `$${dealValue}` : null),
+          budget: budget || null,
+          companyName: companyName || qualificationData?.companyName || null,
+          dealValue: (dealValue !== undefined && dealValue !== null && dealValue !== '') ? Number(dealValue) : null,
+          currency: currency || 'USD',
           sourceLanguage: sourceLanguage || null,
           targetLanguage: targetLanguage || null,
           wordCount: wordCount ? parseInt(wordCount, 10) : null,

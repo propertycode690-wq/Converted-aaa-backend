@@ -842,3 +842,127 @@ model ReviewProviderConfig {
 
   @@map("review_provider_configs")
 }
+
+// ==========================================
+// SMART QR REVIEW & COMPLAINT SYSTEM (PHASE 1)
+// ==========================================
+
+model QrCode {
+  id                  String               @id @default(uuid())
+  tenantId            String               @default("default") @db.VarChar(191)
+  slug                String               @unique @db.VarChar(100)
+  codeLabel           String               @db.VarChar(191)
+  locationName        String?              @db.VarChar(191)
+  campaignName        String?              @db.VarChar(191)
+  targetType          String               @default("REVIEW_PAGE") @db.VarChar(50)
+  destinationUrl      String               @db.Text
+  googleReviewUrl     String?              @db.Text
+  scanCount           Int                  @default(0)
+  googleReviewClicks  Int                  @default(0)
+  feedbackSubmissions Int                  @default(0)
+  isActive            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  feedbacks           CustomerFeedback[]
+  complaints          CustomerComplaint[]
+  analyticsEvents     QrAnalyticsEvent[]
+
+  @@map("qr_codes")
+  @@index([tenantId])
+  @@index([slug])
+  @@index([isActive])
+}
+
+model CustomerFeedback {
+  id                 String              @id @default(uuid())
+  tenantId           String              @default("default") @db.VarChar(191)
+  qrCodeId           String?             @db.VarChar(191)
+  qrCode             QrCode?             @relation(fields: [qrCodeId], references: [id], onDelete: SetNull)
+  rating             Int
+  feedbackCategory   String?             @db.VarChar(100)
+  customerName       String?             @db.VarChar(191)
+  customerEmail      String?             @db.VarChar(191)
+  customerPhone      String?             @db.VarChar(50)
+  feedbackText       String?             @db.Text
+  sentiment          String              @default("NEUTRAL") @db.VarChar(20)
+  isResolved         Boolean             @default(false)
+  deviceFingerprint  String?             @db.VarChar(191)
+  createdAt          DateTime            @default(now())
+
+  complaint          CustomerComplaint?
+
+  @@map("customer_feedbacks")
+  @@index([tenantId])
+  @@index([qrCodeId])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+model CustomerComplaint {
+  id                 String            @id @default(uuid())
+  tenantId           String            @default("default") @db.VarChar(191)
+  ticketNumber       String            @unique @db.VarChar(50)
+  feedbackId         String?           @unique @db.VarChar(191)
+  feedback           CustomerFeedback? @relation(fields: [feedbackId], references: [id], onDelete: SetNull)
+  qrCodeId           String?           @db.VarChar(191)
+  qrCode             QrCode?           @relation(fields: [qrCodeId], references: [id], onDelete: SetNull)
+  priority           String            @default("MEDIUM") @db.VarChar(20)
+  status             String            @default("OPEN") @db.VarChar(30)
+  issueCategory      String            @db.VarChar(100)
+  customerName       String?           @db.VarChar(191)
+  customerContact    String?           @db.VarChar(191)
+  description        String            @db.Text
+  internalNotes      Json?
+  assignedToId       String?           @db.VarChar(191)
+  resolutionNotes    String?           @db.Text
+  resolvedAt         DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@map("customer_complaints")
+  @@index([tenantId])
+  @@index([status])
+  @@index([priority])
+  @@index([assignedToId])
+  @@index([createdAt])
+}
+
+model QrAnalyticsEvent {
+  id                 String            @id @default(uuid())
+  tenantId           String            @default("default") @db.VarChar(191)
+  qrCodeId           String            @db.VarChar(191)
+  qrCode             QrCode            @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  eventType          String            @db.VarChar(50)
+  deviceType         String?           @db.VarChar(50)
+  referrer           String?           @db.Text
+  ipHash             String?           @db.VarChar(64)
+  createdAt          DateTime          @default(now())
+
+  @@map("qr_analytics_events")
+  @@index([tenantId])
+  @@index([qrCodeId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+model QrBusinessSetting {
+  id                      String       @id @default(uuid())
+  tenantId                String       @unique @default("default") @db.VarChar(191)
+  businessName            String       @default("My Business") @db.VarChar(191)
+  businessType            String       @default("RESTAURANT") @db.VarChar(50)
+  logoUrl                 String?      @db.Text
+  primaryColor            String       @default("#2563EB") @db.VarChar(20)
+  googlePlaceId           String?      @db.VarChar(191)
+  googleReviewUrl         String?      @db.Text
+  welcomeMessage          String?      @db.Text
+  privateFeedbackHeader   String?      @db.Text
+  notifyEmail             String?      @db.VarChar(191)
+  notifyWhatsapp          String?      @db.VarChar(50)
+  notifyOnNegativeFeedback Boolean     @default(true)
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  @@map("qr_business_settings")
+  @@index([tenantId])
+}

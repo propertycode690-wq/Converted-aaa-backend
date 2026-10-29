@@ -295,7 +295,7 @@ const getRefundRequests = async (req, res) => {
         clientName: r.client ? `${r.client.firstName} ${r.client.lastName}` : 'Unknown',
         clientEmail: r.client?.email || '',
         clientPhone: r.client?.phone || '',
-        serviceType: r.client?.serviceType || 'IT Services',
+        serviceType: r.client?.serviceType || 'Visa Package',
         totalPaidAmount: clientPaidTotal,
         amount: r.amount || 0,
         status: r.status || 'Pending Review',
@@ -441,19 +441,19 @@ const createRefundRequest = async (req, res) => {
       const clientEmailHtml = `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
           <div style="text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
-            <h2 style="color: #070D19; margin: 0;">Kiaan Technologies</h2>
-            <p style="color: #C59B27; font-weight: 700; margin: 4px 0 0; font-size: 14px;">Official Retainer Refund Claim Acknowledgment</p>
+            <h2 style="color: #051A3B; margin: 0;">AAA Business Consultancy</h2>
+            <p style="color: #C59B27; font-weight: 700; margin: 4px 0 0; font-size: 14px;">Official Guarantee Refund Claim Acknowledgment</p>
           </div>
           <p style="font-size: 15px;">Dear <strong>${clientName}</strong>,</p>
-          <p>We have successfully received your refund claim request under our <strong>Project Delivery & SOW Satisfaction Policy</strong>.</p>
+          <p>We have successfully received your refund claim request under our <strong>Spain Visa 100% Money-Back Guarantee Policy</strong>.</p>
           <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 18px; border-radius: 8px; margin: 20px 0;">
-            <h4 style="margin: 0 0 10px; color: #070D19;">Ticket Claim Details (#${refund.id.substring(0, 8)})</h4>
+            <h4 style="margin: 0 0 10px; color: #051A3B;">Ticket Claim Details (#${refund.id.substring(0, 8)})</h4>
             <p style="margin: 5px 0;"><strong>Category:</strong> ${category}</p>
             <p style="margin: 5px 0;"><strong>Date Submitted:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
             <p style="margin: 5px 0;"><strong>Refund Amount Status:</strong> <strong style="color: #d97706;">Pending Admin Audit & Approval</strong></p>
             <p style="margin: 5px 0;"><strong>Status:</strong> <span style="background-color: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Pending Review</span></p>
           </div>
-          <p style="font-size: 14px; color: #475569;">Our engineering audit team is reviewing your project ticket and deliverables. You will be updated once your payout is audited and executed.</p>
+          <p style="font-size: 14px; color: #475569;">Our audit team is reviewing your submitted embassy rejection documentation. You will be updated once your payout is audited and executed.</p>
         </div>
       `;
 
@@ -461,7 +461,7 @@ const createRefundRequest = async (req, res) => {
       
       await Promise.allSettled([
         sendEmail({
-          to: 'finance@kiaantechnologies.com',
+          to: 'client@aaabusinessconsultancy.com',
           subject: `🚨 Alert: New Refund Claim Submitted by ${clientName} (€${refundAmount})`,
           html: adminEmailHtml
         }).then(res => console.log(`[Refund Email] Admin email sent:`, res))
@@ -565,15 +565,15 @@ const updateRefundStatus = async (req, res) => {
       const receiptHtml = `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; color: #2d3748; background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 24px; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px;">
-            <h2 style="color: #070D19; margin: 0; font-size: 24px;">Kiaan Technologies</h2>
+            <h2 style="color: #051A3B; margin: 0; font-size: 24px;">AAA Business Consultancy</h2>
             <p style="color: #C59B27; font-size: 14px; font-weight: 700; margin: 4px 0 0;">Official Refund Confirmation & Payment Receipt</p>
           </div>
           
           <p>Dear <strong>${refund.client.firstName} ${refund.client.lastName}</strong>,</p>
-          <p>We are writing to confirm that your refund claim under our <strong>Project Delivery & SOW Satisfaction Policy</strong> has been audited and successfully processed.</p>
+          <p>We are writing to confirm that your refund claim under our <strong>Spain Visa 100% Money-Back Guarantee Policy</strong> has been audited and successfully processed.</p>
           
           <div style="background-color: #FAF6ED; border: 1px solid rgba(197, 155, 39, 0.4); padding: 20px; margin: 20px 0; border-radius: 8px;">
-            <h4 style="margin: 0 0 12px; color: #070D19; font-size: 16px;">Receipt Summary (#${refund.id.substring(0, 8)})</h4>
+            <h4 style="margin: 0 0 12px; color: #051A3B; font-size: 16px;">Receipt Summary (#${refund.id.substring(0, 8)})</h4>
             <p style="margin: 6px 0; font-size: 14px;"><strong>Refund Category:</strong> ${refund.category}</p>
             <p style="margin: 6px 0; font-size: 14px;"><strong>Processed Amount:</strong> <span style="color: #dc2626; font-weight: 800; font-size: 18px;">€${refund.amount.toLocaleString()}</span></p>
             <p style="margin: 6px 0; font-size: 14px;"><strong>Payout Method:</strong> ${refund.payoutMethod || 'Direct Transfer'}</p>
@@ -582,20 +582,20 @@ const updateRefundStatus = async (req, res) => {
           </div>
 
           <div style="text-align: center; margin: 28px 0;">
-            <a href="${portalUrl}" style="background-color: #070D19; color: #C59B27; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; display: inline-block;">
+            <a href="${portalUrl}" style="background-color: #051A3B; color: #E5C058; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; display: inline-block;">
               View & Download PDF Receipt in Portal
             </a>
           </div>
 
           <p style="font-size: 13px; color: #64748b; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 12px; text-align: center;">
-            This is an automated financial confirmation from Kiaan Technologies.
+            This is an automated financial confirmation from AAA Business Consultancy LLC.
           </p>
         </div>
       `;
 
       sendEmail({
         to: refund.client.email,
-        subject: `Refund Processed Successfully (€${refund.amount}) - Kiaan Technologies`,
+        subject: `Refund Processed Successfully (€${refund.amount}) - AAA Visa`,
         html: receiptHtml
       }).then(async (emailRes) => {
         console.log(`[Refund Email] Dispatched receipt to ${refund.client.email}`);
@@ -606,7 +606,7 @@ const updateRefundStatus = async (req, res) => {
             channel: 'EMAIL',
             direction: 'OUTBOUND',
             messageId: emailRes?.messageId || `RF_EMAIL_${refund.id}`,
-            content: `Refund Processed Successfully (€${refund.amount}) - Kiaan Technologies`,
+            content: `Refund Processed Successfully (€${refund.amount}) - AAA Visa`,
             deliveryStatus: 'SENT'
           }
         }).catch(() => null);
@@ -1032,7 +1032,7 @@ const createStripeCheckoutSession = async (req, res) => {
           currency: 'eur',
           product_data: {
             name: packageNameStr,
-            description: `Enterprise IT software development & engineering support for Customer ID: ${customerIdDisplay}`,
+            description: `Certified Spain visa relocation & administrative services support for Customer ID: ${customerIdDisplay}`,
           },
           unit_amount: Math.max(50, Math.round(finalTotalPayable * 100)), // + 5% VAT included (min 50 cents)
         },

@@ -50,7 +50,7 @@ exports.sendLinkedInDM = async (recipientId, text) => {
 
   const orgUrn = organizationId?.startsWith('urn:li:organization:') 
     ? organizationId 
-    : `urn:li:organization:${organizationId || 'kiaan-technologies-it-solutions'}`;
+    : `urn:li:organization:${organizationId || 'aaa-business-consultancy-llc-spain-visa'}`;
 
   try {
     const response = await axios.post(
@@ -145,7 +145,7 @@ exports.sendAutomatedLinkedInGreeting = async (senderId, senderName) => {
     const clientName = (senderName && !senderName.includes('LinkedIn User')) ? senderName : 'Valued Client';
     const leadFormUrl = `https://aaa-crm-service.netlify.app/#/public/lead-form?source=LinkedIn&liId=${encodeURIComponent(cleanId)}`;
 
-    const greetingText = `Greetings from Kiaan Technologies! 🚀💻\n\nDear ${clientName},\nThank you for connecting with us on LinkedIn regarding IT & Software Engineering Services.\n\nTo schedule a 30-minute Technical Discovery & Architecture Session, please click the link below:\n\n👉 ${leadFormUrl}\n\nOur solutions engineering team looks forward to connecting with you.`;
+    const greetingText = `Greetings from AAA Business Consultancy LLC! ✈️🇪🇸\n\nDear ${clientName},\nThank you for connecting with us on LinkedIn regarding Spain Visa & Residency Services.\n\nTo book your FREE 20-Minute Eligibility Assessment & Document Verification, please click the link below to complete your initial details:\n\n👉 ${leadFormUrl}\n\nOnce submitted, our dedicated immigration consultant will reach out to assist you.`;
 
     // 1. Send LinkedIn DM
     await exports.sendLinkedInDM(cleanId, greetingText);
@@ -267,6 +267,6 @@ exports.replyToLinkedInComment = async (commentUrn, replyText) => {
  */
 exports.getBookingFormQuickTemplate = (clientName) => {
   const name = clientName && !clientName.includes('User') ? clientName : 'there';
-  return `Hello @${name}! Thank you for connecting with Kiaan Technologies. 🚀💻\n\nTo explore custom software development, cloud infrastructure, or AI solutions and schedule a discovery session with our technical team, please share your details here:\n👉 https://aaa-crm-service.netlify.app/#/public/lead-form?source=LinkedIn_Comment\n\nOur solutions engineering team looks forward to assisting you!`;
+  return `Hello @${name}! Thank you for reaching out to AAA Business Consultancy LLC. 🇪🇸✈️\n\nTo check your full eligibility for Spain Visa & Residency (Digital Nomad, Non-Lucrative, Golden Visa) and schedule your FREE consultation, please fill out our quick assessment form here:\n👉 https://aaa-crm-service.netlify.app/#/public/lead-form?source=LinkedIn_Comment\n\nOur team looks forward to assisting you!`;
 };
 

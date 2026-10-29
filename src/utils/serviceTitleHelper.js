@@ -1,34 +1,26 @@
 /**
- * Resolves dynamic title, icon, assessment name, and category name based on selected IT service type.
- * Kiaan Technologies IT Services Platform.
+ * Resolves dynamic title, icon, assessment name, and category name based on selected service type.
+ * Supports Property Investment Guidance Services and Spain Visa & Residency Services.
  */
 function getServiceTitleInfo(serviceType) {
   const service = String(serviceType || '').toLowerCase();
 
-  if (service.includes('cloud') || service.includes('devops')) {
+  // 🏠 Property Investment Guidance Service
+  if (service.includes('property') || service.includes('investment')) {
     return {
-      icon: '☁️',
-      title: 'Cloud & DevOps Architecture Consultation',
-      assessmentName: 'Cloud Infrastructure & Security Assessment',
-      categoryName: 'Cloud & Infrastructure Services'
+      icon: '🏠',
+      title: 'Property Investment Consultation',
+      assessmentName: 'Property Investment Guidance Assessment',
+      categoryName: 'Property Investment Guidance Services'
     };
   }
 
-  if (service.includes('ai') || service.includes('automation')) {
-    return {
-      icon: '🤖',
-      title: 'AI Engineering & Workflow Automation Consultation',
-      assessmentName: 'AI & Data Readiness Assessment',
-      categoryName: 'AI & Automation Solutions'
-    };
-  }
-
-  // Default: Custom Software & IT Solutions
+  // ✈️ Default: Spain Visa & Residency Services (DNV, NLV, Tourist, Study, etc.)
   return {
-    icon: '💻',
-    title: 'Custom Software & Architecture Consultation',
-    assessmentName: 'IT Project Scope & Technical Assessment',
-    categoryName: 'Custom Software & IT Services'
+    icon: '✈️',
+    title: 'Spain Visa Consultation',
+    assessmentName: 'Spain Visa Eligibility Assessment',
+    categoryName: 'Spain Visa & Residency Services'
   };
 }
 

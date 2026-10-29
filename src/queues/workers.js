@@ -35,12 +35,13 @@ const setupWorkers = () => {
           console.log(`[Telegram Worker] Processing message from Telegram user: ${name}`);
           
           const telegramService = require('../services/telegramService');
-          let responseText = `Hi ${name || 'there'}! Welcome to Kiaan Technologies. 💻🚀\n\nFor IT & Software Engineering services, type /services.\nFor booking an Architecture Discovery Session, type /book.`;
+          const lowerText = (msgText || '').toLowerCase();
+          let responseText = `Hi ${name || 'there'}! Thanks for messaging our Telegram Bot. 🇪🇸\n\nFor Spain Visa & Relocation services details, type /spain.\nFor booking a Free Eligibility Assessment, type /book.`;
           
-          if (lowerText.includes('/services') || lowerText.includes('service') || lowerText.includes('software')) {
-            responseText = `<b>Kiaan Technologies IT Solutions</b> 🚀\n\nWe specialize in:\n• Custom Software & Web/Mobile Apps\n• Cloud Infrastructure & DevOps (AWS/GCP)\n• AI Engineering & Workflow Automation\n• Dedicated Engineering Pods\n\nReply /book to schedule a technical discovery call.`;
-          } else if (lowerText.includes('/book') || lowerText.includes('book') || lowerText.includes('discovery')) {
-            responseText = `<b>Book Discovery Session</b> 📅\n\nPlease schedule your technical session using our portal: https://kiaantechnologies.com/discovery`;
+          if (lowerText.includes('/spain') || lowerText.includes('visa')) {
+            responseText = `<b>Spain Relocation Pathways</b> ✈️\n\nWe specialize in:\n• Digital Nomad Visa (DNV)\n• Non-Lucrative Visa (NLV)\n• Golden Visa (Property Investment)\n• Student & Schengen Visas\n\nReply /book to secure an intake slot with our advisors.`;
+          } else if (lowerText.includes('/book') || lowerText.includes('book') || lowerText.includes('assess')) {
+            responseText = `<b>Book Assessment</b> 📅\n\nPlease secure your consultation call using this link: https://aaabusinessconsultancy.com/book-assessment`;
           }
           
           await telegramService.sendTelegramMessage(chatId, responseText);

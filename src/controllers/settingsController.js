@@ -3,7 +3,7 @@ let DEFAULT_CUSTOMIZATION = {
     { id: 'admin', label: 'Admin (General Manager)' },
     { id: 'operations', label: 'Operations Admin' },
     { id: 'finance', label: 'Finance Officer' },
-    { id: 'consultant', label: 'Solutions Consultant / IT Lead' },
+    { id: 'consultant', label: 'Consultant / Visa Agent' },
     { id: 'marketing', label: 'Marketing Executive' }
   ],
   admin: {
@@ -84,17 +84,17 @@ let DEFAULT_CUSTOMIZATION = {
       { date: '2026-08-09', startTime: '09:00', endTime: '18:00' }
     ],
     holidays: [],
-    welcomeEmailSubject: 'Welcome to Kiaan Technologies - Your Client Portal is Ready! 🚀',
+    welcomeEmailSubject: 'Welcome to AAA Business Consultancy - Your Client Portal is Ready! ✈️',
     welcomeEmailTemplate: `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; color: #2d3748;">
   <div style="text-align: center; margin-bottom: 24px;">
-    <h2 style="color: #070D19; margin: 0;">Kiaan Technologies</h2>
-    <p style="color: #C59B27; font-size: 14px; margin: 4px 0 0;">Enterprise IT Solutions & Custom Engineering</p>
+    <h2 style="color: #4f46e5; margin: 0;">AAA Business Consultancy</h2>
+    <p style="color: #718096; font-size: 14px; margin: 4px 0 0;">Relocation & Spain Visa Services</p>
   </div>
   <h3 style="color: #1a202c; border-bottom: 1px solid #edf2f7; padding-bottom: 10px;">Welcome to the Client Portal! 🎉</h3>
   <p>Hello <strong>{client_name}</strong>,</p>
-  <p>Congratulations! Your project account has been initialized. We have successfully set up your profile and created your Client Portal account.</p>
+  <p>Congratulations! Your file has been initialized. We have successfully set up your profile and created your Client Portal account.</p>
   
-  <p>You can now log in to view project milestones, track sprint deliverables, and upload technical specifications.</p>
+  <p>You can now log in to select your relocation package, complete your payment, and upload your visa documents.</p>
   
   <div style="background-color: #f7fafc; border-left: 4px solid #4f46e5; padding: 16px; margin: 20px 0; border-radius: 4px;">
     <h4 style="margin: 0 0 8px; color: #4f46e5;">Access Credentials</h4>
@@ -107,9 +107,9 @@ let DEFAULT_CUSTOMIZATION = {
     ⚠️ Note: For your security, you will be prompted to change this temporary password immediately upon your first login.
   </p>
   
-  <p>If you have any questions, feel free to contact your assigned engineering lead.</p>
+  <p>If you have any questions, feel free to contact your assigned consultant.</p>
   <p style="font-size: 13px; color: #718096; margin-top: 30px; border-top: 1px solid #edf2f7; padding-top: 10px;">
-    This is an automated notification from Kiaan Technologies CRM. Please do not reply directly to this email.
+    This is an automated notification from AAA Visa CRM. Please do not reply directly to this email.
   </p>
 </div>`
   }

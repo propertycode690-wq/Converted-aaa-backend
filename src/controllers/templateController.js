@@ -6,14 +6,14 @@ const DEFAULT_SYSTEM_TEMPLATES = [
     name: 'Greet',
     type: 'QUICK_REPLY',
     category: 'QUICK_REPLY',
-    body: 'Hello👋 \n\nWelcome to Kiaan Technologies! \n\nWe provide end-to-end custom software development, cloud infrastructure, AI automation, and enterprise web solutions. \n\nHow can we help accelerate your technology roadmap today?',
+    body: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Spain Visa, Residency & Relocation requirements. \n\nReply Hi to get started.',
     active: true
   },
   {
-    name: 'Project Inquiry & Discovery Form',
+    name: 'Booking & Assessment Form',
     type: 'QUICK_REPLY',
     category: 'QUICK_REPLY',
-    body: 'Hello! 🚀 Thank you for connecting with Kiaan Technologies.\n\nTo share your technical specifications, architecture requirements, or project scope and schedule a consultation with our solutions architects, please fill out our quick inquiry form here:\n👉 https://crm.kiaantechnologies.com/#/public/lead-form?source=Social_Inquiry\n\nOur engineering team looks forward to discussing your project!',
+    body: 'Hello! 🇪🇸✈️ Thank you for connecting with AAA Business Consultancy LLC.\n\nTo check your full eligibility for Spain Visa & Residency (Digital Nomad, NLV, Golden Visa) and schedule your consultation, please complete our quick assessment form here:\n👉 https://aaa-crm-service.netlify.app/#/public/lead-form?source=Social_Comment\n\nOur team looks forward to assisting you!',
     active: true
   }
 ];

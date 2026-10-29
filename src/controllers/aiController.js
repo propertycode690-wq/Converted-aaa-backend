@@ -9,8 +9,8 @@ const generateAiSummary = async (client, communications = [], lead = null) => {
   const apiKey = process.env.OPENAI_API_KEY;
   const isRealApiKey = apiKey && !apiKey.includes('your_openai');
 
-  const service = client.serviceType || 'Custom Software & IT Engineering';
-  const nationality = client.countryOfResidence || client.nationality || 'Enterprise Client';
+  const service = client.serviceType || 'Spain Visa & Residency';
+  const nationality = client.nationality || 'International Applicant';
   const name = `${client.firstName} ${client.lastName}`;
   const totalLogs = communications.length;
 
@@ -19,30 +19,30 @@ const generateAiSummary = async (client, communications = [], lead = null) => {
 
   if (isRealApiKey) {
     try {
-      const prompt = `You are an AI technical assistant for the executive leadership of Kiaan Technologies IT Solutions.
+      const prompt = `You are an AI assistant for Wael Madi, CEO of AAA Business Consultancy LLC.
 Analyze this client record and generate a structured JSON summary.
 Client Name: ${name}
 Service: ${service}
-Country: ${nationality}
+Nationality: ${nationality}
 Qualification Data: ${qualText}
 Client Status: ${client.status}
-Delivery Status: ${client.visaStatus || 'Not Started'}
+Visa Status: ${client.visaStatus || 'Not Started'}
 Communication Logs:
 ${commText || 'No logs yet'}
 
 You MUST return a JSON object with the following fields:
 {
-  "clientObjective": "Provide a 1-2 sentence description of the IT software, cloud, or AI solutions they need and their delivery goals.",
-  "missingRequirements": ["List missing technical specifications, credentials, or SOW approvals required from the client as separate strings."],
-  "eligibilityAssessment": "Assess project readiness and technical feasibility based on available info.",
-  "communicationSummary": "Summarize previous conversations, technical questions asked by the client, and answers provided.",
+  "clientObjective": "Provide a 1-2 sentence description of what service they are interested in and their goals/expectations.",
+  "missingRequirements": ["List missing documents, missing info, or pending actions required from the client as separate strings."],
+  "eligibilityAssessment": "Assess their eligibility based on available info. Mention potential concerns, risks, or rejection factors.",
+  "communicationSummary": "Summarize previous conversations, key questions asked by the client, and answers already provided.",
   "lastActivity": "Detail the date/time and description of the latest action performed by the client or staff.",
-  "nextRecommendedAction": "State the most critical next step (e.g. 'Request architectural specifications', 'Send sprint retainer link', etc.)",
+  "nextRecommendedAction": "State the most critical next step (e.g. 'Request criminal background check', 'Send payment link', etc.)",
   "priorityLevel": "Must be one of: '🔴 High Priority', '🟡 Medium Priority', '🟢 Low Priority'",
   "leadTemperature": "Must be one of: '🔥 Hot Lead', '🟠 Warm Lead', '❄ Cold Lead'",
   "overallCaseProgress": 35, // A number representing progress percentage (e.g. 15, 35, 60, 90, 100)
-  "recommendedPackage": "State the most suitable IT engagement plan based on their requirements.",
-  "estimatedSuccessProbability": 90 // An integer representing estimated likelihood of project success
+  "recommendedPackage": "State the most suitable package based on their profile.",
+  "estimatedSuccessProbability": 85 // An integer representing estimated likelihood of approval (for staff eyes only)
 }`;
 
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -70,20 +70,25 @@ You MUST return a JSON object with the following fields:
   }
 
   // Smart Structured Heuristic Fallback Summarizer
-  const budget = client.budget || lead?.budget || 'Standard Retainer';
-  const clientObjective = `${name} is looking to build and scale technological solutions with Kiaan Technologies under ${service}. Target budget is ${budget}.`;
+  const preferableArea = client.preferableArea || lead?.preferableArea || 'Spain';
+  const budget = client.budget || lead?.budget || 'Standard';
+  const clientObjective = `${name} is focused on securing Spanish residency via the ${service} Pathway. Target timeline is immediate relocation to ${preferableArea} with a budget of ${budget}.`;
 
   const missingRequirements = [];
+  if (!client.nationality) missingRequirements.push('Nationality declaration is missing.');
   if (client.visaStatus === 'Documents Pending' || !client.visaStatus) {
-    missingRequirements.push('Project scope Statement of Work (SOW) sign-off is pending.');
-    missingRequirements.push('API integration specifications and architecture diagrams are required.');
+    missingRequirements.push('Criminal Background check with Apostille is missing.');
+    missingRequirements.push('Official Spain health insurance policy documents are required.');
   } else {
-    missingRequirements.push('Staging environment deployment credentials and acceptance criteria are pending.');
+    missingRequirements.push('Official translated bank statements showing stable remote income are pending.');
   }
 
-  let eligibilityAssessment = `Based on technical intake, project requirements are feasible and align with Kiaan Technologies engineering capabilities under ${service}. Technical risk is low.`;
+  let eligibilityAssessment = `Based on self-intake qualifications, client has high eligibility under the ${service} thresholds. Concern level is low.`;
+  if (client.nationality === 'Russian' || client.nationality === 'Chinese') {
+    eligibilityAssessment += ' Note: Check extra compliance checks for financial transactions from this origin.';
+  }
 
-  let communicationSummary = `Discovery sessions initialized. Logging ${totalLogs} interactions.`;
+  let communicationSummary = `Consultations booked successfully. Logging ${totalLogs} interactions.`;
   if (totalLogs > 0) {
     const lastComm = communications[totalLogs - 1];
     communicationSummary += ` Last conversation channel: ${lastComm.channel} (${lastComm.direction}). Discussion: ${lastComm.content.substring(0, 80)}...`;
@@ -93,20 +98,22 @@ You MUST return a JSON object with the following fields:
     ? `Last interaction logged on ${new Date(communications[totalLogs - 1].createdAt).toLocaleDateString()} via ${communications[totalLogs - 1].channel}`
     : `Client account initialized on ${new Date(client.createdAt).toLocaleDateString()}`;
 
-  let nextRecommendedAction = 'Contact the client to confirm technical sprint kick-off.';
+  let nextRecommendedAction = 'Contact the client to complete their visa package setup.';
   if (client.status === 'Waiting for Payment') {
-    nextRecommendedAction = 'Send secure invoice link for selected IT Engagement Plan.';
+    nextRecommendedAction = 'Send secure payment link for selected Spain Relocation Package.';
   } else if (client.visaStatus === 'Documents Pending') {
-    nextRecommendedAction = 'Request technical architecture specifications and SOW sign-off.';
+    nextRecommendedAction = 'Request additional criminal background documentation and passport copies.';
   }
 
   let overallCaseProgress = 15;
   if (client.status === 'Payment Received') overallCaseProgress = 40;
   if (client.visaStatus === 'Documents Under Review') overallCaseProgress = 60;
   if (client.visaStatus === 'Ready to Submit') overallCaseProgress = 80;
-  if (client.visaStatus === 'Visa Approved' || client.visaStatus === 'Delivered') overallCaseProgress = 100;
+  if (client.visaStatus === 'Visa Approved') overallCaseProgress = 100;
 
-  let successProbability = 92;
+  let successProbability = 85;
+  if (client.nationality === 'Russian' || client.nationality === 'Chinese') successProbability = 72;
+  if (service.toLowerCase().includes('dnv')) successProbability = 90;
 
   let leadTemperature = 'Warm';
   if (client.status === 'Waiting for Payment' || client.visaStatus === 'Ready to Submit') leadTemperature = 'Hot';

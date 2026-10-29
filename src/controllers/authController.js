@@ -43,8 +43,19 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Determine tenant identity safely without hardcoding or client trust
+    let tenantId = user.tenantId;
+    if (!tenantId && user.customPermissions && typeof user.customPermissions === 'object' && user.customPermissions.tenantId) {
+      tenantId = user.customPermissions.tenantId;
+    }
+    if (!tenantId) {
+      tenantId = (user.email && user.email.toLowerCase().endsWith('@aaaconsultancy.com'))
+        ? 'tenant_aaa_consultancy'
+        : `tenant_user_${user.id}`;
+    }
+
     const token = jwt.sign(
-      { id: user.id, role: user.role, email: user.email, name: user.fullName },
+      { id: user.id, role: user.role, email: user.email, name: user.fullName, tenantId },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
@@ -58,6 +69,7 @@ const login = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
+        tenantId,
         customPermissions: user.customPermissions
       }
     });
@@ -87,7 +99,9 @@ const getMe = async (req, res) => {
     
     if (!user) return res.status(404).json({ message: 'User not found' });
     
-    res.json(user);
+    // Attach tenantId to user payload
+    const tenantId = user.tenantId || (user.email && user.email.toLowerCase().endsWith('@aaaconsultancy.com') ? 'tenant_aaa_consultancy' : `tenant_user_${user.id}`);
+    res.json({ ...user, tenantId });
   } catch (error) {
     console.error('GetMe error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

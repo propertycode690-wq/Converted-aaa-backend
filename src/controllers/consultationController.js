@@ -121,7 +121,7 @@ const getConsultations = async (req, res) => {
           assignedAt: c.assignedAt || c.createdAt,
           clientName: c.lead ? `${c.lead.firstName} ${c.lead.lastName}` : (c.client ? `${c.client.firstName} ${c.client.lastName}` : 'Unknown'),
           clientLanguage: c.lead?.preferredLanguage || c.client?.preferredLanguage || 'N/A',
-          visaType: c.lead?.serviceType || c.client?.serviceType || c.recommendedService || 'Custom Software Development',
+          visaType: c.lead?.serviceType || c.client?.serviceType || c.recommendedService || 'Spain Visa',
           nationality: c.lead?.nationality || c.client?.nationality || 'N/A',
           countryOfResidence: c.lead?.countryOfResidence || c.client?.countryOfResidence || 'N/A',
           agentName: c.consultant?.fullName || 'Unassigned',
@@ -338,7 +338,7 @@ const autoConvertLeadToClient = async (leadId) => {
           countryOfResidence: lead.countryOfResidence,
           preferredLanguage: lead.preferredLanguage || 'English',
           clientCode: unifiedClientCode,
-          serviceType: lead.serviceType || 'custom_software',
+          serviceType: lead.serviceType || 'spain_visa',
           assignedToId: lead.assignedToId,
           assignedAt: lead.assignedToId ? new Date() : undefined,
           applicantsCount: String(lead.applicantsCount || 'Main Only'),
@@ -1089,7 +1089,7 @@ async function getPublicConsultationDetails(req, res) {
         phone: lead.phone || '',
         nationality: lead.nationality || '',
         countryOfResidence: lead.countryOfResidence || '',
-        service: lead.serviceType || 'IT Solutions Consultation',
+        service: lead.serviceType || 'Spain Visa Consultation',
         package: (lead.qualificationData && lead.qualificationData.package) || 'Standard',
         currentDate: consultation.date,
         currentTime: consultation.timeSlot,
@@ -1353,7 +1353,7 @@ async function publicCancelConsultation(req, res) {
         data: {
           action: `Meeting Cancelled by Client (${clientName})`,
           performedBy: clientName,
-          details: `Client cancelled IT Technical Discovery appointment scheduled for ${displayDate} at ${consultation.timeSlot}. Lead status updated to 'Meeting Cancelled'.`
+          details: `Client cancelled Spain Visa appointment scheduled for ${displayDate} at ${consultation.timeSlot}. Lead status updated to 'Meeting Cancelled'.`
         }
       }).catch(err => console.warn('[AuditLog Warning] Could not record cancellation audit:', err.message));
 

@@ -13,23 +13,35 @@ const resolveServiceName = (payment) => {
 
   const sLower = rawService.toLowerCase();
 
-  if (sLower === 'full_process' || sLower.includes('engineering pod') || sLower.includes('option b') || sLower === 'opt_b') {
-    return 'Dedicated Engineering Pod';
+  if (sLower.includes('translation') || sLower.includes('sworn') || sLower.includes('traducci')) {
+    return 'Spanish Sworn Translation';
   }
-  if (sLower === 'premium' || sLower.includes('enterprise') || sLower.includes('option d') || sLower === 'opt_d') {
-    return 'Enterprise Custom Solutions';
+  if (sLower === 'full_process' || sLower.includes('full processing') || sLower.includes('option b') || sLower === 'opt_b') {
+    return 'Full Processing Package (Spain Visa)';
   }
-  if (sLower.includes('cloud') || sLower.includes('devops') || sLower.includes('option c') || sLower === 'opt_c') {
-    return 'Cloud & DevOps Modernization';
+  if (sLower === 'premium' || sLower.includes('premium package') || sLower.includes('option c') || sLower.includes('option d') || sLower === 'opt_d') {
+    return 'Premium Package (End-to-End + Relocation)';
   }
-  if (sLower === 'option_a' || sLower === 'standard' || sLower.includes('mvp') || sLower.includes('assessment') || sLower.includes('consultation')) {
-    return 'Startup MVP Acceleration';
+  if (sLower === 'relocation' || sLower.includes('administrative relocation') || sLower === 'opt_c') {
+    return 'Administrative Relocation Package';
   }
-  if (sLower.includes('ai') || sLower.includes('automation')) {
-    return 'AI Engineering & Automation';
+  if (sLower === 'option_a' || sLower === 'standard' || sLower.includes('case assessment') || sLower.includes('consultation')) {
+    return 'Professional Case Assessment';
   }
-  if (sLower.includes('mobile') || sLower.includes('web') || sLower.includes('software')) {
-    return 'Custom Software Development';
+  if (sLower.includes('dnv') || sLower.includes('digital nomad')) {
+    return 'Digital Nomad Visa (DNV)';
+  }
+  if (sLower.includes('nlv') || sLower.includes('non-lucrative')) {
+    return 'Non-Lucrative Visa (NLV)';
+  }
+  if (sLower.includes('golden')) {
+    return 'Golden Visa (Residency by Investment)';
+  }
+  if (sLower.includes('student') || sLower.includes('study')) {
+    return 'Student Visa';
+  }
+  if (sLower.includes('property') || sLower.includes('real estate')) {
+    return 'Property & Investment Advisory';
   }
   if (sLower.includes('tourist')) {
     return 'Tourist / Schengen Visa Support';

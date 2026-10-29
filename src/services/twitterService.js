@@ -127,7 +127,7 @@ exports.sendAutomatedTwitterGreeting = async (senderId, senderName) => {
     const clientName = (senderName && !senderName.includes('Twitter User')) ? senderName : 'Valued Client';
     const leadFormUrl = `https://aaa-crm-service.netlify.app/#/public/lead-form?source=Twitter&twId=${encodeURIComponent(cleanId)}`;
 
-    const greetingText = `Greetings from Kiaan Technologies! 🚀💻\n\nDear ${clientName},\nThank you for reaching out to us on Twitter/X regarding IT & Software Engineering Services.\n\nTo schedule a 30-minute Technical Discovery & Architecture Session, please share your details here:\n\n👉 ${leadFormUrl}\n\nOur solutions architect will connect with you shortly.`;
+    const greetingText = `Greetings from AAA Business Consultancy LLC! ✈️🇪🇸\n\nDear ${clientName},\nThank you for reaching out to us on Twitter/X regarding Spain Visa & Residency Services.\n\nTo book your FREE 20-Minute Eligibility Assessment & Verification, please complete your details here:\n\n👉 ${leadFormUrl}\n\nOur immigration consultant will reach out to you shortly.`;
 
     // 1. Dispatch Twitter DM
     await exports.sendTwitterDM(cleanId, greetingText);

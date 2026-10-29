@@ -127,7 +127,7 @@ exports.handleChatbotMessage = async (phone, name, text, messageId = null, media
   if (isRebookCommand) {
     if (existingClient) {
       const clientName = existingClient.firstName || 'Valued Client';
-      const requestMsg = `Hello *${clientName}*, your request for a technical consultation has been logged. 📝\n\nYour assigned Technical Account Manager will unlock and dispatch your scheduling link shortly.\n\n_Kiaan Technologies_`;
+      const requestMsg = `Hello *${clientName}*, your request for a follow-up consultation has been logged. 📝\n\nYour assigned Case Officer will unlock and dispatch your booking link shortly.\n\n_AAA Business Consultancy_`;
       
       await sendCustomWhatsApp(cleanPhone, requestMsg);
       console.log(`[REBOOK CHATBOT] Acknowledged rebooking request from ${cleanPhone} (${clientName})`);
@@ -166,8 +166,8 @@ exports.handleChatbotMessage = async (phone, name, text, messageId = null, media
   if (!lead) {
     if (userSession.stage === 'INIT' || isResumeCommand) {
       // 3a. First Message: Send Greeting + Form Link
-      const greetingMsg = `Greetings from *Kiaan Technologies*. Thank you for contacting us regarding our enterprise IT & Software Development Services. 💻🚀`;
-      const instructionMsg = `To book your Free 20-Minute Technical Discovery & Scoping Session, please click the link below to select your preferred date and time:\n\n${bookingLink}`;
+      const greetingMsg = `Greetings from *AAA Business Consultancy LLC*. Thank you for contacting us regarding Spain Visa & Residency Services.✈️✈️`;
+      const instructionMsg = `To book your Free 20-Minute Eligibility Assessment & Verification, please click the link below to select your preferred date and time:\n\n${bookingLink}`;
 
       await sendCustomWhatsApp(cleanPhone, greetingMsg);
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -180,7 +180,7 @@ exports.handleChatbotMessage = async (phone, name, text, messageId = null, media
     } else {
       // 3b. Second Message: Send Dedicated Professional Reminder EXACTLY ONCE
       if (!userSession.reminderSent) {
-        const reminderMsg = `📋 *Project Scoping & Discovery Required*\n\nDear Client, to help our engineering team review your requirements and assist you further, kindly complete your initial project inquiry form first:\n\n👉 ${bookingLink}\n\n_Once submitted, our dedicated solutions engineer will immediately reach out to you._`;
+        const reminderMsg = `📋 *Eligibility Assessment Required*\n\nDear Client, to help our team review your profile and assist you further, kindly complete your initial assessment form first:\n\n👉 ${bookingLink}\n\n_Once submitted, our dedicated consultant will immediately reach out to you._`;
         await sendCustomWhatsApp(cleanPhone, reminderMsg);
 
         userSession.reminderSent = true;
@@ -196,7 +196,7 @@ exports.handleChatbotMessage = async (phone, name, text, messageId = null, media
 
   // 4. IF FORM HAS BEEN SUBMITTED (Lead exists in DB):
   if (userSession.stage === 'INIT' || isResumeCommand) {
-    const greetingMsg = `Hello! Welcome back to *Kiaan Technologies*. Our solutions engineering team has received your details and will assist you shortly.`;
+    const greetingMsg = `Hello! Welcome back to *AAA Business Consultancy LLC*. Our team has received your details and will assist you shortly.`;
     await sendCustomWhatsApp(cleanPhone, greetingMsg);
     userSession.stage = 'BOOKING_LINK_SENT';
     await redis.set(sessionKey, JSON.stringify(userSession), 'EX', SESSION_TIMEOUT);
@@ -326,7 +326,7 @@ async function logCommunication(phone, messageText, direction, name = 'Applicant
 }
 
 /**
- * Queries OpenAI completions API for IT enquiries.
+ * Queries OpenAI completions API for general visa enquiries.
  */
 async function getOpenAIAnswer(userQuery) {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -337,7 +337,7 @@ async function getOpenAIAnswer(userQuery) {
       messages: [
         {
           role: 'system',
-          content: 'You are an AI solutions consultant chatbot for Kiaan Technologies. We deliver custom software development, web & mobile applications, cloud & DevOps engineering, and AI automation. Answer briefly, professionally, and keep it under 3 sentences. Mention that the user can reply "agent" to talk to a solutions architect.'
+          content: 'You are a helpful customer support chatbot for AAA Business Consultancy. We help clients obtain visas, residencies (like Digital Nomad Visa, Non-Lucrative Visa, Golden Visa), and Sworn Translations in Spain. Answer briefly, professionally, and keep it under 3 sentences. Mention that the user can reply "agent" to talk to a human consultant.'
         },
         { role: 'user', content: userQuery }
       ],
@@ -354,7 +354,7 @@ async function getOpenAIAnswer(userQuery) {
 }
 
 /**
- * Queries Google Gemini API for IT enquiries.
+ * Queries Google Gemini API for general visa enquiries.
  */
 async function getGeminiAnswer(userQuery) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -365,7 +365,7 @@ async function getGeminiAnswer(userQuery) {
         {
           parts: [
             {
-              text: `You are an AI solutions consultant chatbot for Kiaan Technologies. We deliver custom software development, web & mobile applications, cloud & DevOps engineering, and AI automation. Answer briefly, professionally, and keep it under 3 sentences. Mention that the user can reply "agent" to talk to a solutions architect. User Question: ${userQuery}`
+              text: `You are a helpful customer support chatbot for AAA Business Consultancy. We help clients obtain visas, residencies (like Digital Nomad Visa, Non-Lucrative Visa, Golden Visa), and Sworn Translations in Spain. Answer briefly, professionally, and keep it under 3 sentences. Mention that the user can reply "agent" to talk to a human consultant. User Question: ${userQuery}`
             }
           ]
         }

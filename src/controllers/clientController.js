@@ -295,19 +295,19 @@ const updateClientStatus = async (req, res) => {
         if (client.email) {
           sendEmail({
             to: client.email,
-            subject: 'Action Required: Additional Technical Specifications Needed 🚀',
+            subject: 'Action Required: Additional Documents Needed for Spain Visa 🇪🇸',
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
-                <h2 style="color: #C59B27; text-align: center;">Action Required</h2>
+                <h2 style="color: #d97706; text-align: center;">Action Required</h2>
                 <p>Hello <b>${clientName}</b>,</p>
-                <p>Our engineering team has reviewed your documentation and found that some technical details or scope files are required to proceed with your project kickoff.</p>
+                <p>Our verification team has reviewed your documents and found that some details or additional files are required to proceed with your Spain Visa / Relocation application.</p>
                 <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 15px; border-radius: 6px; margin: 15px 0; color: #b45309;">
-                  <strong>Please log in to your client portal to check the requested technical documents and upload them as soon as possible.</strong>
+                  <strong>Please log in to your client portal to check the requested documents and upload them as soon as possible.</strong>
                 </div>
                 <p>Access your portal here: <a href="${portalUrl}" style="color: #4f46e5; font-weight: bold;">Client Portal Login</a></p>
                 <br>
                 <p>Best regards,</p>
-                <p><b>Kiaan Technologies Engineering Team</b></p>
+                <p><b>AAA Business Consultancy Team</b></p>
               </div>
             `
           }).catch(err => console.error('[BG-Email] Additional docs email failed:', err.message));
@@ -315,7 +315,7 @@ const updateClientStatus = async (req, res) => {
 
         // 2. Send WhatsApp (fire-and-forget — non-blocking)
         if (client.phone) {
-          const waMsg = `🔔 *Action Required: Additional Technical Documents Needed*\n\nHello *${clientName}*,\n\nOur engineering team requires additional technical documentation to proceed with your project kickoff.\n\nPlease log in to your client portal to view the request and upload the required files:\n\n🔗 ${portalUrl}`;
+          const waMsg = `🔔 *Action Required: Additional Documents Needed*\n\nHello *${clientName}*,\n\nOur team requires additional documents to proceed with your Spain Visa / Relocation application.\n\nPlease log in to your client portal to view the request and upload the required files:\n\n🔗 ${portalUrl}`;
           sendCustomWhatsApp(client.phone, waMsg).catch(err => console.error('[BG-WA] Additional docs WA failed:', err.message));
         }
         console.log(`[Auto-Notification] Sent Additional Documents Required alert to ${client.email}`);
@@ -324,32 +324,32 @@ const updateClientStatus = async (req, res) => {
       }
     }
 
-    // Check if status is set to Completed or Delivered
-    if ((status === 'Completed' || status === 'Delivered') && client.email) {
+    // Check if status is set to Completed or Delivered for Sworn Translation client
+    if ((status === 'Completed' || status === 'Delivered') && client.serviceType === 'Spanish Sworn Translation' && client.email) {
       try {
         const { sendEmail } = require('../services/emailService');
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         const portalUrl = `${frontendUrl}/#/portal/login`;
         
-        const subject = 'Your IT Project Deliverables are Completed & Ready! 🚀';
+        const subject = 'Your Sworn Translation is Completed! 🇪🇸';
         const html = `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; color: #2d3748;">
             <div style="text-align: center; margin-bottom: 24px;">
-              <h2 style="color: #070D19; margin: 0;">Kiaan Technologies</h2>
-              <p style="color: #C59B27; font-size: 14px; margin: 4px 0 0;">Enterprise IT Solutions & Custom Engineering</p>
+              <h2 style="color: #4f46e5; margin: 0;">AAA Business Consultancy</h2>
+              <p style="color: #718096; font-size: 14px; margin: 4px 0 0;">Relocation & Spain Visa Services</p>
             </div>
-            <h3 style="color: #10b981; border-bottom: 1px solid #edf2f7; padding-bottom: 10px;">Milestone Completed Successfully! 🎉</h3>
+            <h3 style="color: #10b981; border-bottom: 1px solid #edf2f7; padding-bottom: 10px;">Translation Completed Successfully! 🎉</h3>
             <p>Hello <strong>${client.firstName} ${client.lastName}</strong>,</p>
-            <p>We are pleased to inform you that your project milestone deliverables have been successfully completed, tested, and deployed.</p>
-            <p>You can now log in to your Client Portal to review the deliverable sign-offs and documentation.</p>
+            <p>We are pleased to inform you that your documents have been successfully translated by our certified Spanish sworn translators.</p>
+            <p>You can now log in to your Client Portal to view and download your certified translation PDF files.</p>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${portalUrl}" style="background-color: #070D19; color: #C59B27; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+              <a href="${portalUrl}" style="background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                 Log In to Portal
               </a>
             </div>
-            <p>If you have any questions or need further assistance, please contact your Technical Lead.</p>
+            <p>If you have any questions or need further assistance, please contact your Case Officer.</p>
             <p style="font-size: 13px; color: #718096; margin-top: 30px; border-top: 1px solid #edf2f7; padding-top: 10px;">
-              This is an automated notification from Kiaan Technologies CRM. Please do not reply directly to this email.
+              This is an automated notification from AAA Visa CRM. Please do not reply directly to this email.
             </p>
           </div>
         `;

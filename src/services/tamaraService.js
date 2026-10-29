@@ -26,7 +26,7 @@ exports.createTamaraCheckoutSession = async ({ clientId, amount, email, phone, n
         amount: parseFloat(amount),
         currency: 'AED'
       },
-      description: 'IT & Software Engineering Services',
+      description: 'Spain Visa Relocation Services',
       country_code: 'AE',
       payment_type: 'PAY_BY_INSTALMENTS',
       locale: 'en_US',

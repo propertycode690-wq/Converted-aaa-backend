@@ -35,6 +35,9 @@ exports.getDashboardMetrics = async (req, res) => {
         completedAt: true,
         createdAt: true
       }
+    }).catch(err => {
+      console.warn('[Dashboard] Project table not migrated or unavailable:', err.message);
+      return [];
     });
 
     const projectCounts = {
@@ -70,7 +73,7 @@ exports.getDashboardMetrics = async (req, res) => {
     const tasks = await prisma.projectTask.findMany({
       where: taskWhere,
       select: { id: true, status: true, priority: true, actualHours: true, estimatedHours: true }
-    });
+    }).catch(() => []);
 
     const taskCounts = {
       total: tasks.length,
@@ -88,7 +91,7 @@ exports.getDashboardMetrics = async (req, res) => {
     const timeLogs = await prisma.projectTimeLog.findMany({
       where: timeLogWhere,
       select: { hours: true, workDate: true }
-    });
+    }).catch(() => []);
 
     const now = new Date();
     const startOfWeek = new Date(now);
@@ -116,23 +119,11 @@ exports.getDashboardMetrics = async (req, res) => {
 
     const leads = await prisma.lead.findMany({
       where: leadWhere,
-      select: { id: true, status: true, source: true, serviceType: true, budget: true, dealValue: true, createdAt: true }
+      select: { id: true, status: true, source: true, serviceType: true, dealValue: true, currency: true, createdAt: true }
     });
 
     const openStages = ['New Lead', 'New Inquiry', 'Contacted', 'Qualified', 'In Discussion', 'Assessment Scheduled', 'Discovery Scheduled', 'Requirement Analysis', 'Proposal Sent', 'Negotiation'];
     const wonStages = ['Deal Won', 'Won', 'Completed', 'Client Created', 'Payment Received', 'Converted'];
-
-    const getLeadVal = (l) => {
-      if (l.dealValue !== null && l.dealValue !== undefined) {
-        const val = Number(l.dealValue);
-        if (!isNaN(val) && val > 0) return val;
-      }
-      if (l.budget) {
-        const num = Number(String(l.budget).replace(/[^0-9.]/g, ''));
-        return isNaN(num) ? 0 : num;
-      }
-      return 0;
-    };
 
     const leadCounts = {
       total: leads.length,
@@ -140,11 +131,11 @@ exports.getDashboardMetrics = async (req, res) => {
       inProgress: leads.filter(l => openStages.includes(l.status) && l.status !== 'New Lead' && l.status !== 'New Inquiry').length,
       converted: leads.filter(l => wonStages.includes(l.status)).length,
       // Sales Pipeline KPIs (Deal Value)
-      openPipelineValue: leads.filter(l => openStages.includes(l.status)).reduce((sum, l) => sum + getLeadVal(l), 0),
-      wonContractValue: leads.filter(l => wonStages.includes(l.status)).reduce((sum, l) => sum + getLeadVal(l), 0),
+      openPipelineValue: leads.filter(l => openStages.includes(l.status)).reduce((sum, l) => sum + (Number(l.dealValue) || 0), 0),
+      wonContractValue: leads.filter(l => wonStages.includes(l.status)).reduce((sum, l) => sum + (Number(l.dealValue) || 0), 0),
       averageDealSize: (() => {
-        const wonWithValues = leads.filter(l => wonStages.includes(l.status) && getLeadVal(l) > 0);
-        return wonWithValues.length > 0 ? (wonWithValues.reduce((sum, l) => sum + getLeadVal(l), 0) / wonWithValues.length) : 0;
+        const wonWithValues = leads.filter(l => wonStages.includes(l.status) && Number(l.dealValue) > 0);
+        return wonWithValues.length > 0 ? (wonWithValues.reduce((sum, l) => sum + Number(l.dealValue), 0) / wonWithValues.length) : 0;
       })()
     };
 
@@ -169,7 +160,7 @@ exports.getDashboardMetrics = async (req, res) => {
 
     const payments = await prisma.payment.findMany({
       select: { amount: true, totalPaid: true, status: true }
-    });
+    }).catch(() => []);
 
     let totalRevenuePaid = 0;
     let totalPendingInvoices = 0;
@@ -184,7 +175,7 @@ exports.getDashboardMetrics = async (req, res) => {
     // 6. REPUTATION & REVIEWS
     const reviews = await prisma.review.findMany({
       select: { rating: true, sentiment: true, provider: true }
-    });
+    }).catch(() => []);
 
     const reviewStats = {
       total: reviews.length,
@@ -241,7 +232,7 @@ exports.getRecentActivity = async (req, res) => {
       take: 5,
       orderBy: { updatedAt: 'desc' },
       select: { id: true, name: true, projectCode: true, status: true, updatedAt: true }
-    });
+    }).catch(() => []);
 
     const recentTimeLogs = await prisma.projectTimeLog.findMany({
       take: 5,
@@ -250,13 +241,13 @@ exports.getRecentActivity = async (req, res) => {
         user: { select: { fullName: true } },
         project: { select: { name: true, projectCode: true } }
       }
-    });
+    }).catch(() => []);
 
     const recentReviews = await prisma.review.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
       select: { id: true, provider: true, authorName: true, rating: true, sentiment: true, createdAt: true }
-    });
+    }).catch(() => []);
 
     res.json({
       success: true,

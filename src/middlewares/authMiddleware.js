@@ -10,7 +10,12 @@ const authMiddleware = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // { id, role, email }
+    if (!decoded.tenantId) {
+      decoded.tenantId = (decoded.email && decoded.email.toLowerCase().endsWith('@aaaconsultancy.com'))
+        ? 'tenant_aaa_consultancy'
+        : `tenant_user_${decoded.id}`;
+    }
+    req.user = decoded; // { id, role, email, tenantId }
     
     next();
   } catch (error) {

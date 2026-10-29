@@ -20,47 +20,47 @@ const getFileUrl = (file) => {
   return `/uploads/${file.filename}`;
 };
 
-// Default checklist item templates generated when an IT milestone / delivery review cycle is created
+// Default checklist item templates generated when a resubmission cycle is created
 const DEFAULT_CHECKLIST_TEMPLATES = [
   {
-    templateKey: 'technical_spec',
-    belongsTo: 'Client Technical Lead',
-    category: 'Architecture & Specifications',
-    title: 'System Architecture Specification & Scope Document',
+    templateKey: 'passport_main',
+    belongsTo: 'Main Applicant',
+    category: 'Identity Documents',
+    title: 'Passport Copy (Main Applicant)',
     isMandatory: true,
-    clientInstructions: 'Detailed PRD, entity relationship diagrams, and microservices contracts.'
+    clientInstructions: 'High-resolution color scan of all pages including blank pages.'
   },
   {
-    templateKey: 'company_registration',
-    belongsTo: 'Client Authorized Representative',
-    category: 'Corporate Verification',
-    title: 'Company Registration Certificate / Tax ID',
+    templateKey: 'rejection_letter',
+    belongsTo: 'Main Applicant',
+    category: 'Official Notices',
+    title: 'Embassy Rejection Notice',
     isMandatory: true,
-    clientInstructions: 'Official Certificate of Incorporation or VAT registration document.'
+    clientInstructions: 'Complete official refusal letter issued by the embassy/consulate.'
   },
   {
-    templateKey: 'sow_signoff',
-    belongsTo: 'Project Sponsor',
-    category: 'Contractual Agreements',
-    title: 'Executed Statement of Work (SOW)',
+    templateKey: 'proof_income',
+    belongsTo: 'Main Applicant',
+    category: 'Financial Documents',
+    title: 'Proof of Income / Employment',
     isMandatory: true,
-    clientInstructions: 'Mutually signed SOW outlining sprint milestones, deliverables, and commercial terms.'
+    clientInstructions: 'Recent payslips, employment certificate, or tax returns for the last 12 months.'
   },
   {
-    templateKey: 'api_credentials',
-    belongsTo: 'Engineering Team',
-    category: 'Infrastructure & Integration',
-    title: 'Third-Party API Credentials & Sandbox Access',
-    isMandatory: false,
-    clientInstructions: 'Staging environment API keys, webhooks, or test developer accounts.'
+    templateKey: 'bank_statement',
+    belongsTo: 'Main Applicant',
+    category: 'Financial Documents',
+    title: '6-Month Bank Statement',
+    isMandatory: true,
+    clientInstructions: 'Official bank statement showing sufficient funds and regular income.'
   },
   {
-    templateKey: 'acceptance_criteria',
-    belongsTo: 'Product Owner',
-    category: 'Quality Assurance',
-    title: 'Sprint Acceptance Criteria & UAT Test Plan',
+    templateKey: 'cover_letter',
+    belongsTo: 'Main Applicant',
+    category: 'Application Forms',
+    title: 'Updated Cover Letter & Resubmission Summary',
     isMandatory: true,
-    clientInstructions: 'Specific test scenarios and sign-off benchmarks for final release approval.'
+    clientInstructions: 'Detailed letter explaining how previous refusal points have been addressed.'
   }
 ];
 

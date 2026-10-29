@@ -315,7 +315,7 @@ module.exports = {
           currency: 'eur',
           product_data: {
             name: packageConfig.name,
-            description: `Discovery Session Reservation | Customer ID: ${client.clientCode || client.id}`,
+            description: `No-Show Fee for Free Spain Visa Eligibility Assessment | Customer ID: ${client.clientCode || client.id}`,
           },
           unit_amount: stripeAmount,
         },
