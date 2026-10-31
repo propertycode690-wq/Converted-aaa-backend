@@ -10,21 +10,21 @@ const SMTP_PORT = process.env.SMTP_PORT || 587;
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
 const SMTP_SECURE = process.env.SMTP_SECURE === 'true' || SMTP_PORT == 465;
-const SMTP_FROM = process.env.SMTP_FROM || `"AAA Business Consultancy" <info@aaabusinessconsultancy.com>`;
+const SMTP_FROM = process.env.SMTP_FROM || `"Kiaan Technology" <info@kiaantechnology.com>`;
 
 let resendClient = null;
 let transporter = null;
 
 const getCleanPackageName = (rawPackageName, serviceType) => {
   const input = String(rawPackageName || serviceType || '').trim();
-  if (!input) return 'Spain Visa & Residency Services';
+  if (!input) return 'Custom Software & IT Services';
 
   // If input is a raw technical ID like pkg_1785313855786 or Stripe session ID
   if (input.startsWith('pkg_') || input.startsWith('cs_') || input.startsWith('pi_') || input.startsWith('ch_')) {
     if (serviceType && !String(serviceType).startsWith('pkg_')) {
       return getCleanPackageName(serviceType, null);
     }
-    return 'Spain Relocation & Visa Package';
+    return 'Custom Software Development Package';
   }
 
   const lower = input.toLowerCase();
@@ -32,12 +32,12 @@ const getCleanPackageName = (rawPackageName, serviceType) => {
   if (lower.includes('option_b') || lower.includes('full processing')) return 'Full Processing Package (Option B)';
   if (lower.includes('option_c') || lower.includes('premium')) return 'Premium Package (Option C)';
   if (lower.includes('option_d') || lower.includes('relocation')) return 'Administrative Relocation Package (Option D)';
-  if (lower.includes('nomad') || lower.includes('dnv')) return 'Spain Digital Nomad Visa (DNV)';
-  if (lower.includes('lucrative') || lower.includes('nlv')) return 'Spain Non-Lucrative Visa (NLV)';
-  if (lower.includes('study') || lower.includes('student')) return 'Spain Student Visa';
-  if (lower.includes('tourist') || lower.includes('schengen')) return 'Spain Tourist Visa (Schengen)';
-  if (lower.includes('property') || lower.includes('investment')) return 'Property Investment Guidance Service';
-  if (lower.includes('translation') || lower.includes('sworn')) return 'Spanish Sworn Translation Service';
+  if (lower.includes('web') || lower.includes('frontend')) return 'Web Application Development';
+  if (lower.includes('mobile') || lower.includes('app')) return 'Mobile App Development (iOS & Android)';
+  if (lower.includes('saas') || lower.includes('cloud')) return 'Cloud Architecture & SaaS Solutions';
+  if (lower.includes('ai') || lower.includes('ml')) return 'AI & Machine Learning Solutions';
+  if (lower.includes('devops') || lower.includes('infra')) return 'DevOps & CI/CD Infrastructure';
+  if (lower.includes('consulting') || lower.includes('discovery')) return 'Technical Discovery & Scoping Session';
 
   return input;
 };
@@ -193,14 +193,14 @@ exports.sendEmail = async ({ to, subject, html, text }) => {
 };
 
 /**
- * Sends a customized Spain Visa checklist to the client upon successful payment.
+ * Sends a customized Enterprise IT Software checklist to the client upon successful payment.
  * @param {string} to - Client email
  * @param {string} clientName - Client's name
  * @param {string} serviceType - Service type/visa selected
  */
 exports.sendVisaChecklist = async (to, clientName, serviceType, paymentData = {}) => {
   const normalizedService = (serviceType || '').toLowerCase();
-  let checklistTitle = "Spain Visa Document Checklist";
+  let checklistTitle = "Enterprise IT Software Document Checklist";
   let checklistHtml = `
     <li>Valid Passport (original and copy of all pages)</li>
     <li>Proof of clean criminal record (duly apostilled)</li>
@@ -269,7 +269,7 @@ exports.sendVisaChecklist = async (to, clientName, serviceType, paymentData = {}
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
         <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
-        <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Spain Visa & Residency Services</p>
+        <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Custom Software & Enterprise IT Solutions Services</p>
       </div>
 
       <div style="padding: 28px;">
@@ -385,7 +385,7 @@ exports.sendInvoiceNotificationEmail = async ({ to, clientName, amount, discount
       </div>
 
       <div style="padding: 28px;">
-        <h3 style="color: #1e293b; margin-top: 0; font-size: 18px;">📄 Spain Visa Relocation Invoice & Portal Account</h3>
+        <h3 style="color: #1e293b; margin-top: 0; font-size: 18px;">📄 Enterprise IT Software Relocation Invoice & Portal Account</h3>
         <p style="color: #475569; line-height: 1.6;">Dear <b>${clientName}</b>,</p>
         <p style="color: #475569; line-height: 1.6;">Welcome to AAA Business Consultancy! Your relocation folder has been initialized. Please find your invoice details below:</p>
 
@@ -609,13 +609,13 @@ exports.sendMeetingCancelledEmail = async ({ to, firstName, date, time, rebookLi
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
         <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
-        <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Spain Visa & Residency Services</p>
+        <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Custom Software & Enterprise IT Solutions Services</p>
       </div>
 
       <div style="padding: 28px;">
         <h3 style="color: #e53e3e; margin-top: 0; font-size: 18px;">❌ Appointment Cancelled</h3>
         <p style="color: #4a5568; line-height: 1.6;">Dear <b>${firstName}</b>,</p>
-        <p style="color: #4a5568; line-height: 1.6;">Your Spain Visa Eligibility Assessment scheduled for <b>${formattedDate}</b> at <b>${time}</b> (UAE) has been successfully cancelled.</p>
+        <p style="color: #4a5568; line-height: 1.6;">Your Enterprise IT Software Eligibility Assessment scheduled for <b>${formattedDate}</b> at <b>${time}</b> (UAE) has been successfully cancelled.</p>
         
         <p style="color: #4a5568; line-height: 1.6;">If you would like to schedule another appointment, please use the button below to rebook at your convenience:</p>
 
@@ -631,7 +631,7 @@ exports.sendMeetingCancelledEmail = async ({ to, firstName, date, time, rebookLi
   `;
   return exports.sendEmail({
     to,
-    subject: `Appointment Cancelled: Spain Visa Eligibility Assessment ❌`,
+    subject: `Appointment Cancelled: Enterprise IT Software Eligibility Assessment ❌`,
     html
   });
 };
@@ -642,13 +642,13 @@ exports.sendMeetingRescheduledEmail = async ({ to, firstName, date, time, link, 
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
         <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
-        <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Spain Visa & Residency Services</p>
+        <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Custom Software & Enterprise IT Solutions Services</p>
       </div>
 
       <div style="padding: 28px;">
         <h3 style="color: #4f46e5; margin-top: 0; font-size: 18px;">🔄 Appointment Rescheduled</h3>
         <p style="color: #4a5568; line-height: 1.6;">Dear <b>${firstName}</b>,</p>
-        <p style="color: #4a5568; line-height: 1.6;">Your Spain Visa Eligibility Assessment has been rescheduled successfully.</p>
+        <p style="color: #4a5568; line-height: 1.6;">Your Enterprise IT Software Eligibility Assessment has been rescheduled successfully.</p>
 
         <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin: 20px 0;">
           <h4 style="margin-top: 0; color: #1e293b; font-size: 15px;">📅 New Appointment Details:</h4>
@@ -674,7 +674,7 @@ exports.sendMeetingRescheduledEmail = async ({ to, firstName, date, time, link, 
   `;
   return exports.sendEmail({
     to,
-    subject: `Appointment Rescheduled: Spain Visa Eligibility Assessment (${formattedDate} at ${time}) 🔄`,
+    subject: `Appointment Rescheduled: Enterprise IT Software Eligibility Assessment (${formattedDate} at ${time}) 🔄`,
     html
   });
 };

@@ -36,7 +36,7 @@ const DEFAULT_CHECKLIST_TEMPLATES = [
     category: 'Official Notices',
     title: 'Embassy Rejection Notice',
     isMandatory: true,
-    clientInstructions: 'Complete official refusal letter issued by the embassy/consulate.'
+    clientInstructions: 'Official requirement adjustment or scope review request.'
   },
   {
     templateKey: 'proof_income',
@@ -223,7 +223,7 @@ const createCycle = async (req, res) => {
     }
 
     // 3. Refusal Prerequisite Safeguard (Guard 6)
-    const refusedVisaStatuses = ['Refused', 'Visa Refused', 'Rejected', 'Final Refusal'];
+    const refusedVisaStatuses = ['Terminated', 'Project Cancelled', 'Rejected', 'Scope Closed'];
     const isClientRefused = refusedVisaStatuses.includes(client.visaStatus) || client.status === 'Refused';
     if (!isClientRefused) {
       return res.status(400).json({ message: 'Invalid transition: A new cycle can only be initiated for refused applications.' });
@@ -257,7 +257,7 @@ const createCycle = async (req, res) => {
           status: initialStatus,
           serviceType: serviceType || client.serviceType || 'Resubmission Package',
           originalSubmissionDate: originalSubmissionDate ? new Date(originalSubmissionDate) : (client.createdAt || new Date()),
-          refusalReason: refusalReason || client.refusalReason || 'Visa Refused',
+          refusalReason: refusalReason || client.refusalReason || 'Project Cancelled',
           refusalDate: refusalDate ? new Date(refusalDate) : new Date(),
           changesMade: changesMade || null,
           resubmissionDate: null,

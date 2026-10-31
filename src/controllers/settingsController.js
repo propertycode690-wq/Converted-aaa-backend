@@ -1,19 +1,19 @@
 let DEFAULT_CUSTOMIZATION = {
   rolesDefinition: [
-    { id: 'admin', label: 'Admin (General Manager)' },
-    { id: 'operations', label: 'Operations Admin' },
+    { id: 'admin', label: 'Admin / Project Manager' },
+    { id: 'operations', label: 'Tech Lead / DevOps / QA' },
     { id: 'finance', label: 'Finance Officer' },
-    { id: 'consultant', label: 'Consultant / Visa Agent' },
-    { id: 'marketing', label: 'Marketing Executive' }
+    { id: 'consultant', label: 'Solutions Consultant / Sales BDM' },
+    { id: 'marketing', label: 'Marketing & Growth Manager' }
   ],
   admin: {
-    menus: ['Dashboard', 'Agents', 'Active Cases', 'Closed Cases', 'Leads', 'Social Inbox', 'Marketing', 'Calendar', 'All Agents Performance', 'Integrations'],
-    cards: ['Total Clients', 'Today\'s Clients', 'Total Consultations', 'Today\'s Consultations', 'Upcoming Meetings', 'Pending Payments', 'Total Revenue', 'Active Cases', 'Completed Cases', 'Lost Consultations', 'Revenue Today', 'Outstanding Revenue', 'Refunded (Guarantee Claims)'],
+    menus: ['Dashboard', 'Team', 'Active Projects', 'Archived Projects', 'Leads', 'Social Inbox', 'Marketing', 'Calendar', 'All Agents Performance', 'Integrations'],
+    cards: ['Total Clients', 'Today\'s Clients', 'Total Inquiries', 'Today\'s Inquiries', 'Upcoming Meetings', 'Pending Payments', 'Total Revenue', 'Active Projects', 'Completed Projects', 'Lost Inquiries', 'Revenue Today', 'Outstanding Revenue', 'Refunded (Guarantee Claims)'],
     features: ['canEditTranslationRates']
   },
   operations: {
-    menus: ['Dashboard', 'Agents', 'Active Cases', 'Closed Cases', 'Leads', 'Social Inbox', 'Marketing', 'Calendar', 'All Agents Performance'],
-    cards: ['Total Clients', 'Today\'s Clients', 'Total Consultations', 'Today\'s Consultations', 'Upcoming Meetings', 'Active Cases', 'Completed Cases'],
+    menus: ['Dashboard', 'Team', 'Active Projects', 'Archived Projects', 'Leads', 'Social Inbox', 'Marketing', 'Calendar', 'All Agents Performance'],
+    cards: ['Total Clients', 'Today\'s Clients', 'Total Inquiries', 'Today\'s Inquiries', 'Upcoming Meetings', 'Active Projects', 'Completed Projects'],
     features: []
   },
   finance: {
@@ -23,12 +23,12 @@ let DEFAULT_CUSTOMIZATION = {
   },
   consultant: {
     menus: ['Dashboard', 'Leads', 'Social Inbox', 'Calendar'],
-    cards: ['Upcoming Meetings', 'Active Cases'],
+    cards: ['Upcoming Meetings', 'Active Projects'],
     features: []
   },
   marketing: {
     menus: ['Dashboard', 'Leads', 'Marketing'],
-    cards: ['Total Consultations', 'Today\'s Consultations'],
+    cards: ['Total Inquiries', 'Today\'s Inquiries'],
     features: []
   },
   documentChecklists: {
@@ -84,17 +84,17 @@ let DEFAULT_CUSTOMIZATION = {
       { date: '2026-08-09', startTime: '09:00', endTime: '18:00' }
     ],
     holidays: [],
-    welcomeEmailSubject: 'Welcome to AAA Business Consultancy - Your Client Portal is Ready! ✈️',
+    welcomeEmailSubject: 'Welcome to Kiaan Technology - Your Project Portal is Ready! 🚀',
     welcomeEmailTemplate: `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; color: #2d3748;">
   <div style="text-align: center; margin-bottom: 24px;">
-    <h2 style="color: #4f46e5; margin: 0;">AAA Business Consultancy</h2>
-    <p style="color: #718096; font-size: 14px; margin: 4px 0 0;">Relocation & Spain Visa Services</p>
+    <h2 style="color: #4f46e5; margin: 0;">Kiaan Technology</h2>
+    <p style="color: #718096; font-size: 14px; margin: 4px 0 0;">Custom Software & IT Solutions</p>
   </div>
   <h3 style="color: #1a202c; border-bottom: 1px solid #edf2f7; padding-bottom: 10px;">Welcome to the Client Portal! 🎉</h3>
   <p>Hello <strong>{client_name}</strong>,</p>
   <p>Congratulations! Your file has been initialized. We have successfully set up your profile and created your Client Portal account.</p>
   
-  <p>You can now log in to select your relocation package, complete your payment, and upload your visa documents.</p>
+  <p>You can now log in to select your relocation package, complete your payment, and track your project milestones and tasks.</p>
   
   <div style="background-color: #f7fafc; border-left: 4px solid #4f46e5; padding: 16px; margin: 20px 0; border-radius: 4px;">
     <h4 style="margin: 0 0 8px; color: #4f46e5;">Access Credentials</h4>
@@ -109,7 +109,7 @@ let DEFAULT_CUSTOMIZATION = {
   
   <p>If you have any questions, feel free to contact your assigned consultant.</p>
   <p style="font-size: 13px; color: #718096; margin-top: 30px; border-top: 1px solid #edf2f7; padding-top: 10px;">
-    This is an automated notification from AAA Visa CRM. Please do not reply directly to this email.
+    This is an automated notification from Kiaan IT CRM. Please do not reply directly to this email.
   </p>
 </div>`
   }
@@ -628,7 +628,58 @@ const purgeFinanceData = async (req, res) => {
   }
 };
 
-module.exports = { 
+
+let exchangeRatesCache = {
+  data: null,
+  timestamp: 0
+};
+
+const getExchangeRates = async (req, res) => {
+  const ONE_HOUR = 60 * 60 * 1000;
+  const now = Date.now();
+
+  if (exchangeRatesCache.data && (now - exchangeRatesCache.timestamp < ONE_HOUR)) {
+    return res.json({ success: true, cached: true, ...exchangeRatesCache.data });
+  }
+
+  try {
+    const response = await fetch('https://open.er-api.com/v6/latest/USD');
+    const data = await response.json();
+    if (data && data.result === 'success') {
+      const payload = {
+        base: 'USD',
+        usdToInr: data.rates?.INR || 86.5,
+        usdToEur: data.rates?.EUR || 0.90,
+        usdToAed: data.rates?.AED || 3.6725,
+        rates: {
+          USD: 1,
+          INR: data.rates?.INR || 86.5,
+          EUR: data.rates?.EUR || 0.90,
+          AED: data.rates?.AED || 3.6725
+        },
+        timeLastUpdateUtc: data.time_last_update_utc || new Date().toISOString()
+      };
+      exchangeRatesCache = { data: payload, timestamp: now };
+      return res.json({ success: true, cached: false, ...payload });
+    }
+  } catch (err) {
+    console.warn('[Exchange Rates API Error] Falling back to default rates:', err.message);
+  }
+
+  const fallback = {
+    base: 'USD',
+    usdToInr: 86.50,
+    usdToEur: 0.90,
+    usdToAed: 3.6725,
+    rates: { USD: 1, INR: 86.50, EUR: 0.90, AED: 3.6725 },
+    timeLastUpdateUtc: new Date().toISOString(),
+    isFallback: true
+  };
+  return res.json({ success: true, ...fallback });
+};
+
+module.exports = {
+  getExchangeRates, 
   getCustomizationSettings, 
   updateCustomizationSettings,
   getCustomization: () => DEFAULT_CUSTOMIZATION,

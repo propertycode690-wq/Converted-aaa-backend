@@ -109,9 +109,10 @@ exports.sendAutomatedInstagramGreeting = async (senderId, senderName) => {
     }
 
     const clientName = (senderName && !senderName.includes('Meta User')) ? senderName : 'Valued Client';
-    const leadFormUrl = `https://aaa-crm-service.netlify.app/#/public/lead-form?source=Instagram&igId=${encodeURIComponent(cleanId)}`;
+    const frontendBaseUrl = process.env.FRONTEND_URL || 'https://kiaantechnology.com';
+    const leadFormUrl = `${frontendBaseUrl}/#/public/lead-form?source=Instagram&igId=${encodeURIComponent(cleanId)}`;
 
-    const greetingText = `Greetings from AAA Technology Consultancy! 💻🚀\n\nDear ${clientName},\nThank you for reaching out to us regarding our IT Services & Software Solutions.\n\nTo schedule your FREE 20-Minute Technical Discovery & Project Scoping Session, please click the link below to share your requirements:\n\n👉 ${leadFormUrl}\n\nOur engineering lead will immediately review your project needs and get in touch.`;
+    const greetingText = `Hello ${clientName}! 👋\n\nThank you for reaching out to Kiaan Technology! 💻🚀\n\nWe provide modern IT Services, Custom Software Development, Web & Mobile App Solutions, and Cloud Services.\n\nPlease let us know how we can assist you today, or click below to share your project requirements:\n👉 ${leadFormUrl}\n\nOur technical team will review your requirements and get in touch with you shortly.`;
 
     // 1. Send IG DM via Meta Graph API
     await exports.sendInstagramDM(cleanId, greetingText);

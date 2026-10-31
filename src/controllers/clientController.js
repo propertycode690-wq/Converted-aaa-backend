@@ -258,7 +258,7 @@ const updateClientStatus = async (req, res) => {
     }
 
     const paidStatuses = ['Payment Received', 'Paid', 'Partially Paid', 'Under Process', 'Processing', 'Active'];
-    const activeVisaStatuses = ['Document Preparation', 'Document Review', 'Apostille & Translations', 'Submitted - Pending Decision', 'NIE / Local Registration', 'Visa Approved'];
+    const activeVisaStatuses = ['Document Preparation', 'Document Review', 'Apostille & Translations', 'Submitted - Pending Decision', 'Architecture Review', 'Milestone Completed'];
 
     if (documentUploadAllowed !== undefined) {
       data.documentUploadAllowed = Boolean(documentUploadAllowed);
@@ -300,7 +300,7 @@ const updateClientStatus = async (req, res) => {
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
                 <h2 style="color: #d97706; text-align: center;">Action Required</h2>
                 <p>Hello <b>${clientName}</b>,</p>
-                <p>Our verification team has reviewed your documents and found that some details or additional files are required to proceed with your Spain Visa / Relocation application.</p>
+                <p>Our verification team has reviewed your documents and found that some details or additional files are required to proceed with your Software Development Project.</p>
                 <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 15px; border-radius: 6px; margin: 15px 0; color: #b45309;">
                   <strong>Please log in to your client portal to check the requested documents and upload them as soon as possible.</strong>
                 </div>
@@ -315,7 +315,7 @@ const updateClientStatus = async (req, res) => {
 
         // 2. Send WhatsApp (fire-and-forget — non-blocking)
         if (client.phone) {
-          const waMsg = `🔔 *Action Required: Additional Documents Needed*\n\nHello *${clientName}*,\n\nOur team requires additional documents to proceed with your Spain Visa / Relocation application.\n\nPlease log in to your client portal to view the request and upload the required files:\n\n🔗 ${portalUrl}`;
+          const waMsg = `🔔 *Action Required: Additional Documents Needed*\n\nHello *${clientName}*,\n\nOur team requires additional documents to proceed with your Software Development Project.\n\nPlease log in to your client portal to view the request and upload the required files:\n\n🔗 ${portalUrl}`;
           sendCustomWhatsApp(client.phone, waMsg).catch(err => console.error('[BG-WA] Additional docs WA failed:', err.message));
         }
         console.log(`[Auto-Notification] Sent Additional Documents Required alert to ${client.email}`);
@@ -336,7 +336,7 @@ const updateClientStatus = async (req, res) => {
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; color: #2d3748;">
             <div style="text-align: center; margin-bottom: 24px;">
               <h2 style="color: #4f46e5; margin: 0;">AAA Business Consultancy</h2>
-              <p style="color: #718096; font-size: 14px; margin: 4px 0 0;">Relocation & Spain Visa Services</p>
+              <p style="color: #718096; font-size: 14px; margin: 4px 0 0;">Enterprise IT & Software Engineering</p>
             </div>
             <h3 style="color: #10b981; border-bottom: 1px solid #edf2f7; padding-bottom: 10px;">Translation Completed Successfully! 🎉</h3>
             <p>Hello <strong>${client.firstName} ${client.lastName}</strong>,</p>
@@ -349,7 +349,7 @@ const updateClientStatus = async (req, res) => {
             </div>
             <p>If you have any questions or need further assistance, please contact your Case Officer.</p>
             <p style="font-size: 13px; color: #718096; margin-top: 30px; border-top: 1px solid #edf2f7; padding-top: 10px;">
-              This is an automated notification from AAA Visa CRM. Please do not reply directly to this email.
+              This is an automated notification from AAA IT CRM. Please do not reply directly to this email.
             </p>
           </div>
         `;
@@ -595,7 +595,7 @@ const clientLogin = async (req, res) => {
         firstName: client.firstName || 'Client',
         lastName: client.lastName || '',
         email: client.email,
-        serviceType: client.serviceType || 'General Visa',
+        serviceType: client.serviceType || 'Custom Software Engineering',
         isTemporaryPassword: !!client.isTemporaryPassword
       }
     });
@@ -734,7 +734,7 @@ const updateClient = async (req, res) => {
     if (nextFollowUpDate !== undefined) data.nextFollowUpDate = nextFollowUpDate ? new Date(nextFollowUpDate) : null;
 
     const paidStatuses = ['Payment Received', 'Paid', 'Partially Paid', 'Under Process', 'Processing', 'Active'];
-    const activeVisaStatuses = ['Document Preparation', 'Document Review', 'Apostille & Translations', 'Submitted - Pending Decision', 'NIE / Local Registration', 'Visa Approved'];
+    const activeVisaStatuses = ['Document Preparation', 'Document Review', 'Apostille & Translations', 'Submitted - Pending Decision', 'Architecture Review', 'Milestone Completed'];
 
     if (req.body.documentUploadAllowed !== undefined) {
       data.documentUploadAllowed = Boolean(req.body.documentUploadAllowed);

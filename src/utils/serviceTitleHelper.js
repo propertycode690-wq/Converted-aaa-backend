@@ -1,6 +1,6 @@
 /**
  * Resolves dynamic title, icon, assessment name, and category name based on selected service type.
- * Supports Property Investment Guidance Services and Spain Visa & Residency Services.
+ * Supports Property Investment Guidance Services and Custom Software & Cloud Solutions Services.
  */
 function getServiceTitleInfo(serviceType) {
   const service = String(serviceType || '').toLowerCase();
@@ -15,12 +15,12 @@ function getServiceTitleInfo(serviceType) {
     };
   }
 
-  // ✈️ Default: Spain Visa & Residency Services (DNV, NLV, Tourist, Study, etc.)
+  // ✈️ Default: Custom Software & Cloud Solutions Services (DNV, NLV, Tourist, Study, etc.)
   return {
     icon: '✈️',
-    title: 'Spain Visa Consultation',
-    assessmentName: 'Spain Visa Eligibility Assessment',
-    categoryName: 'Spain Visa & Residency Services'
+    title: 'IT Software Solutions Consultation',
+    assessmentName: 'IT Software Solutions Eligibility Assessment',
+    categoryName: 'Custom Software & Cloud Solutions Services'
   };
 }
 

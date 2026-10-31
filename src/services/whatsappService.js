@@ -160,15 +160,15 @@ We have successfully received your inquiry for *{{2}}*. One of our dedicated spe
           consultation_no_show_cancelled: 'Hello {{1}}, your Free Eligibility Assessment has been cancelled because you did not join within 10 minutes of the scheduled time. Due to high demand, missed appointments cannot be rescheduled.',
           payment_pending_reminder: 'Hi {{1}}, this is a reminder that payment is pending for Invoice #{{2}}.',
           payment_drip_discount: 'Hello {{1}}, use discount code CEO24H to complete your payment for Invoice #{{2}} with a special discount! Valid for 24 hours only.',
-          google_review: 'Hello, \n\nWe hope your consultation with AAA Business Consultancy was helpful! 🇪🇸\n\nIf you enjoyed your experience with our advisors, could you please spare 30 seconds to share your feedback on Google? Your review means the world to us and helps others find us.\n\n⭐ Leave your Google Review here:\nhttps://g.page/r/CXugL6bqOJCXEAI/review\n\nThank you so much for your support!',
-          aaa_greeting: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Spain Visa, Residency & Relocation requirements. \n\nReply Hi to get started.',
-          t1: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Spain Visa, Residency & Relocation requirements. \n\nReply Hi to get started.',
-          greet: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Spain Visa, Residency & Relocation requirements. \n\nReply Hi to get started.',
+          google_review: 'Hello, \n\nWe hope your consultation with AAA Business Consultancy was helpful! 💻\n\nIf you enjoyed your experience with our advisors, could you please spare 30 seconds to share your feedback on Google? Your review means the world to us and helps others find us.\n\n⭐ Leave your Google Review here:\nhttps://g.page/r/CXugL6bqOJCXEAI/review\n\nThank you so much for your support!',
+          aaa_greeting: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Custom Software, Web, Mobile & Cloud Solutions. \n\nReply Hi to get started.',
+          t1: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Custom Software, Web, Mobile & Cloud Solutions. \n\nReply Hi to get started.',
+          greet: 'Hello👋 \n\nWelcome to AAA Business Consultancy Services! \n\nWe’re here to help you with your Custom Software, Web, Mobile & Cloud Solutions. \n\nReply Hi to get started.',
           aaa_meeting_reminder_24h: 'Hello {{1}},\n\nThank you for contacting AAA Business Consultancy! Our specialists have received your inquiry and will connect with you shortly.',
           aaa_meeting_reminder_1h: 'Hello {{1}},\n\nThank you for contacting AAA Business Consultancy! Our specialists have received your inquiry and will connect with you shortly.',
-          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started setting up your Spain Visa / Relocation application but haven\'t completed the payment yet.\n\nTo secure your assigned immigration specialist and begin processing today, please complete your payment:\n\n🔗 Payment Link: {{2}}\n\nIf you have any questions, please reply directly. We are here to help!\n\nBest regards,\nAAA Business Consultancy Team',
-          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your relocation package invoice is still pending. It has been 24 hours since your account initialization.\n\nTo avoid losing your slot and priority file review, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nOur team is ready to begin your visa submission steps as soon as payment is confirmed.\n\nBest regards,\nAAA Business Consultancy Team',
-          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your invoice has been pending for 2 days.\n\nIf you are ready to relocate or secure your Spanish visa/residency, please complete the final steps of your application fee payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started setting up your Software Development & IT Architecture project but haven\'t completed the payment yet.\n\nTo secure your assigned IT Project Manager & Solution Architect and begin processing today, please complete your payment:\n\n🔗 Payment Link: {{2}}\n\nIf you have any questions, please reply directly. We are here to help!\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your software development invoice is still pending. It has been 24 hours since your account initialization.\n\nTo avoid losing your slot and priority file review, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nOur team is ready to begin your architecture sprint and development steps as soon as payment is confirmed.\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your invoice has been pending for 2 days.\n\nIf you are ready to kick off your software development project, please complete the final steps of your application fee payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nAAA Business Consultancy Team',
           meeting_cancelled: `❌ *${svcInfo.title} Cancelled*
 
 Dear *{{1}}*,
@@ -321,15 +321,15 @@ Your Free ${svcInfo.assessmentName} has been rescheduled successfully!
 
       if (!templateText) {
         const fallbacks = {
-          automated_first_response: 'Thank you for contacting AAA Business Consultancy regarding Spain Visa & Residency Services. To Book Your Free Eligibility Assessment & Verification Please Contact Us on Whatsapp: https://wa.me/971509554142?text=I%20want%20to%20book%20an%20assessment%20from%20TikTok',
-          consultation_scheduled_confirmation: 'Hello {{1}}, your Spain Visa Consultation is scheduled on {{2}} at {{3}} (UAE).',
+          automated_first_response: 'Thank you for contacting AAA Business Consultancy regarding Custom Software & Enterprise IT Solutions. To Book Your Free Eligibility Assessment & Verification Please Contact Us on Whatsapp: https://wa.me/971509554142?text=I%20want%20to%20book%20an%20assessment%20from%20TikTok',
+          consultation_scheduled_confirmation: 'Hello {{1}}, your IT Architecture & Discovery Meeting is scheduled on {{2}} at {{3}} (UAE).',
           consultation_no_show_cancelled: 'Hello {{1}}, your Free Eligibility Assessment has been cancelled because you did not join within 10 minutes of the scheduled time. Due to high demand, missed appointments cannot be rescheduled.',
           payment_pending_reminder: 'Hi {{1}}, this is a reminder that payment is pending for Invoice #{{2}}.',
           payment_drip_discount: 'Hello {{1}}, use discount code CEO24H to complete your payment for Invoice #{{2}} with a special discount! Valid for 24 hours only.',
-          google_review: 'We hope your consultation with AAA Business Consultancy was helpful! 🇪🇸\n\nIf you enjoyed your experience with our advisors, could you please spare 30 seconds to share your feedback on Google? Your review means the world to us and helps others find us.\n\n⭐ Leave your Google Review here:\nhttps://g.page/r/CXugL6bqOJCXEAI/review\n\nThank you so much for your support!',
-          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started setting up your Spain Visa / Relocation application but haven\'t completed the payment yet.\n\nTo secure your assigned immigration specialist and begin processing today, please complete your payment:\n\n🔗 Payment Link: {{2}}\n\nIf you have any questions, please reply directly. We are here to help!\n\nBest regards,\nAAA Business Consultancy Team',
-          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your relocation package invoice is still pending. It has been 24 hours since your account initialization.\n\nTo avoid losing your slot and priority file review, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nOur team is ready to begin your visa submission steps as soon as payment is confirmed.\n\nBest regards,\nAAA Business Consultancy Team',
-          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your invoice has been pending for 2 days.\n\nIf you are ready to relocate or secure your Spanish visa/residency, please complete the final steps of your application fee payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nAAA Business Consultancy Team'
+          google_review: 'We hope your consultation with AAA Business Consultancy was helpful! 💻\n\nIf you enjoyed your experience with our advisors, could you please spare 30 seconds to share your feedback on Google? Your review means the world to us and helps others find us.\n\n⭐ Leave your Google Review here:\nhttps://g.page/r/CXugL6bqOJCXEAI/review\n\nThank you so much for your support!',
+          payment_reminder_2h: 'Hello {{1}},\n\nWe noticed that you started setting up your Software Development & IT Architecture project but haven\'t completed the payment yet.\n\nTo secure your assigned IT Project Manager & Solution Architect and begin processing today, please complete your payment:\n\n🔗 Payment Link: {{2}}\n\nIf you have any questions, please reply directly. We are here to help!\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_24h: 'Hello {{1}},\n\nThis is a gentle reminder that your software development invoice is still pending. It has been 24 hours since your account initialization.\n\nTo avoid losing your slot and priority file review, please finalize your payment using the link below:\n\n🔗 Complete Payment: {{2}}\n\nOur team is ready to begin your architecture sprint and development steps as soon as payment is confirmed.\n\nBest regards,\nAAA Business Consultancy Team',
+          payment_reminder_48h: 'Hello {{1}},\n\nWe would like to remind you that your invoice has been pending for 2 days.\n\nIf you are ready to kick off your software development project, please complete the final steps of your application fee payment:\n\n🔗 Final Payment Link: {{2}}\n\nBest regards,\nAAA Business Consultancy Team'
         };
         templateText = fallbacks[templateName] || `Template: ${templateName}`;
       }
@@ -445,7 +445,7 @@ exports.sendPaymentSuccessWhatsApp = async ({ client, lead, phone, paymentId, am
       if (rawService && !rawService.startsWith('pkg_') && !rawService.startsWith('a5459021')) {
         return rawService;
       }
-      return 'Spain Visa & Residency Service';
+      return 'IT Software Project & Residency Service';
     };
 
     const displayService = resolvePackageTitle(serviceType || client?.serviceType || lead?.serviceType, client?.packageId);
@@ -471,7 +471,7 @@ ${credsSection}
 Your Client Portal is active. Log in to upload your required documents and track your application progress:
 🔗 *Client Portal:* ${portalUrl}
 
-Thank you for choosing AAA Business Consultancy! 🇪🇸`;
+Thank you for choosing AAA Business Consultancy! 💻`;
 
     const twilioTo = `whatsapp:${cleanPhone}`;
     let deliveryStatus = 'SENT';
@@ -603,7 +603,7 @@ exports.sendInvoiceWhatsApp = async ({ client, amount, discount, netAmount, serv
     const activeNote = (note || notes || client.notes || client.profileSummary || '').trim();
     const noteSection = activeNote ? `\n\n📝 *Note:* ${activeNote}` : '';
 
-    const message = `Hello *${clientName}*, welcome to AAA Business Consultancy! 🇪🇸
+    const message = `Hello *${clientName}*, welcome to AAA Business Consultancy! 💻
 
 Your Spain Relocation profile has been initialized. 🎉
 
@@ -728,7 +728,7 @@ exports.sendInvoiceWhatsApp = async ({ client, amount, discount, netAmount, serv
     const { sendCustomWhatsApp } = require('./chatbotService');
     const clientName = `${client?.firstName || ''} ${client?.lastName || ''}`.trim() || 'Valued Client';
     const formattedAmount = Number(netAmount || amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const displayService = serviceType || client?.serviceType || 'Spain Visa / Relocation Service';
+    const displayService = serviceType || client?.serviceType || 'IT Software Project / Relocation Service';
 
     const messageBody = `📄 *Invoice & Payment Request - AAA Business Consultancy*
 
@@ -744,7 +744,7 @@ ${checkoutUrl ? `• 🔗 *Complete Payment / View Invoice:* ${checkoutUrl}` : '
 If you have any questions, feel free to reply directly to this message.
 
 Best regards,
-*AAA Business Consultancy Team* 🇪🇸`;
+*AAA Business Consultancy Team* 💻`;
 
     await sendCustomWhatsApp(phone, messageBody);
   } catch (err) {
@@ -765,7 +765,7 @@ exports.sendRefundProcessedWhatsApp = async ({ client, amount, category, payoutM
     const formattedAmount = Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const methodStr = payoutMethod || 'Direct Bank Transfer / Card Refund';
     const refStr = transactionRef || 'N/A';
-    const refundCat = category || 'Spain Visa Money-Back Guarantee';
+    const refundCat = category || 'IT Software Project Money-Back Guarantee';
 
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -773,7 +773,7 @@ exports.sendRefundProcessedWhatsApp = async ({ client, amount, category, payoutM
     const year = now.getFullYear();
     const formattedDate = `${day}/${month}/${year}`;
 
-    const messageBody = `💰 *Refund Successful & Processed - AAA Business Consultancy* 🇪🇸
+    const messageBody = `💰 *Refund Successful & Processed - AAA Business Consultancy* 💻
 
 Dear *${clientName}*,
 
@@ -789,7 +789,7 @@ We are pleased to inform you that your refund claim has been *successfully proce
 Thank you for choosing AAA Business Consultancy. If you have any questions, feel free to reply directly to this message.
 
 Best regards,
-*AAA Business Consultancy Team* 🇪🇸`;
+*AAA Business Consultancy Team* 💻`;
 
     await sendCustomWhatsApp(phone, messageBody);
     console.log(`[Refund WhatsApp Success] Processed confirmation sent to ${phone}`);

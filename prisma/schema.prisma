@@ -966,3 +966,98 @@ model QrBusinessSetting {
   @@map("qr_business_settings")
   @@index([tenantId])
 }
+
+model AiAgent {
+  id             String    @id @default(uuid())
+  tenantId       String    @default("default") @db.VarChar(191)
+  code           String    @unique @db.VarChar(50)
+  name           String    @db.VarChar(191)
+  roleTitle      String    @db.VarChar(191)
+  description    String?   @db.Text
+  status         String    @default("ACTIVE") @db.VarChar(50)
+  executionMode  String    @default("AUTOMATIC") @db.VarChar(50)
+  scheduleCron   String?   @db.VarChar(100)
+  dailyBudget    Float     @default(5.0)
+  spentToday     Float     @default(0.0)
+  lastRunAt      DateTime?
+  lastSuccessAt  DateTime?
+  failureCount   Int       @default(0)
+  config         Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("ai_agents")
+  @@index([tenantId])
+  @@index([status])
+}
+
+model AiTaskExecution {
+  id              String    @id @default(uuid())
+  tenantId        String    @default("default") @db.VarChar(191)
+  agentId         String    @db.VarChar(191)
+  agentCode       String    @db.VarChar(50)
+  taskType        String    @db.VarChar(100)
+  triggerEvent    String    @db.VarChar(100)
+  entityType      String?   @db.VarChar(50)
+  entityId        String?   @db.VarChar(191)
+  status          String    @default("QUEUED") @db.VarChar(50)
+  inputPayload    Json?
+  outputResult    Json?
+  errorMessage    String?   @db.Text
+  retryCount      Int       @default(0)
+  executionTimeMs Int       @default(0)
+  tokensUsed      Int       @default(0)
+  costEstimate    Float     @default(0.0)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("ai_task_executions")
+  @@index([agentCode])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AiApprovalRequest {
+  id              String    @id @default(uuid())
+  tenantId        String    @default("default") @db.VarChar(191)
+  agentId         String    @db.VarChar(191)
+  agentCode       String    @db.VarChar(50)
+  taskExecutionId String?   @db.VarChar(191)
+  actionType      String    @db.VarChar(100)
+  entityType      String    @db.VarChar(50)
+  entityId        String    @db.VarChar(191)
+  proposedPayload Json?
+  reason          String    @db.Text
+  riskLevel       String    @default("MEDIUM") @db.VarChar(50)
+  status          String    @default("PENDING") @db.VarChar(50)
+  decisionNotes   String?   @db.Text
+  decidedById     String?   @db.VarChar(191)
+  decidedByName   String?   @db.VarChar(191)
+  decidedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("ai_approval_requests")
+  @@index([status])
+  @@index([agentCode])
+}
+
+model AiDailyMetric {
+  id           String   @id @default(uuid())
+  tenantId     String   @default("default") @db.VarChar(191)
+  agentCode    String   @db.VarChar(50)
+  metricDate   String   @db.VarChar(50)
+  totalJobs    Int      @default(0)
+  successJobs  Int      @default(0)
+  failedJobs   Int      @default(0)
+  totalTokens  Int      @default(0)
+  totalCost    Float    @default(0.0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([agentCode, metricDate])
+  @@map("ai_daily_metrics")
+}
+
