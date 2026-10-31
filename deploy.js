@@ -492,6 +492,287 @@ async function ensureSmartQrSchema() {
   }
 }
 
+async function ensureItProjectSchema() {
+  console.log('[Deploy] Checking database schema for IT Project & Delivery tables...');
+
+  // 1. projects
+  const hasProjects = await tableExists('projects');
+  if (!hasProjects) {
+    console.log('[Deploy] Creating table `projects`...');
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`projects\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`projectCode\` VARCHAR(191) NULL,
+        \`name\` VARCHAR(191) NOT NULL,
+        \`description\` TEXT NULL,
+        \`serviceType\` VARCHAR(191) NULL,
+        \`status\` VARCHAR(50) NOT NULL DEFAULT 'PLANNING',
+        \`priority\` VARCHAR(50) NOT NULL DEFAULT 'MEDIUM',
+        \`health\` VARCHAR(50) NOT NULL DEFAULT 'ON_TRACK',
+        \`startDate\` DATETIME(3) NULL,
+        \`deadline\` DATETIME(3) NULL,
+        \`completedAt\` DATETIME(3) NULL,
+        \`budget\` DOUBLE NOT NULL DEFAULT 0,
+        \`spentBudget\` DOUBLE NOT NULL DEFAULT 0,
+        \`currency\` VARCHAR(10) NOT NULL DEFAULT 'USD',
+        \`repositoryUrl\` VARCHAR(255) NULL,
+        \`stagingUrl\` VARCHAR(255) NULL,
+        \`productionUrl\` VARCHAR(255) NULL,
+        \`techStack\` JSON NULL,
+        \`clientId\` VARCHAR(191) NOT NULL,
+        \`projectManagerId\` VARCHAR(191) NULL,
+        \`deliveryManagerId\` VARCHAR(191) NULL,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        UNIQUE INDEX \`projects_projectCode_key\`(\`projectCode\`),
+        INDEX \`projects_clientId_idx\`(\`clientId\`),
+        INDEX \`projects_status_idx\`(\`status\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `projects` created.');
+  } else {
+    console.log('[Deploy] Table `projects`: OK');
+  }
+
+  // 2. project_milestones
+  const hasMilestones = await tableExists('project_milestones');
+  if (!hasMilestones) {
+    console.log('[Deploy] Creating table `project_milestones`...');
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`project_milestones\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`projectId\` VARCHAR(191) NOT NULL,
+        \`title\` VARCHAR(191) NOT NULL,
+        \`description\` TEXT NULL,
+        \`milestoneType\` VARCHAR(50) NOT NULL DEFAULT 'MILESTONE',
+        \`status\` VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+        \`startDate\` DATETIME(3) NULL,
+        \`dueDate\` DATETIME(3) NULL,
+        \`completedAt\` DATETIME(3) NULL,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        INDEX \`project_milestones_projectId_idx\`(\`projectId\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `project_milestones` created.');
+  } else {
+    console.log('[Deploy] Table `project_milestones`: OK');
+  }
+
+  // 3. project_tasks
+  const hasTasks = await tableExists('project_tasks');
+  if (!hasTasks) {
+    console.log('[Deploy] Creating table `project_tasks`...');
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`project_tasks\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`projectId\` VARCHAR(191) NOT NULL,
+        \`milestoneId\` VARCHAR(191) NULL,
+        \`title\` VARCHAR(191) NOT NULL,
+        \`description\` TEXT NULL,
+        \`taskType\` VARCHAR(50) NOT NULL DEFAULT 'FEATURE',
+        \`status\` VARCHAR(50) NOT NULL DEFAULT 'TODO',
+        \`priority\` VARCHAR(50) NOT NULL DEFAULT 'MEDIUM',
+        \`estimatedHours\` DOUBLE NOT NULL DEFAULT 0,
+        \`actualHours\` DOUBLE NOT NULL DEFAULT 0,
+        \`assignedToId\` VARCHAR(191) NULL,
+        \`dueDate\` DATETIME(3) NULL,
+        \`completedAt\` DATETIME(3) NULL,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        INDEX \`project_tasks_projectId_idx\`(\`projectId\`),
+        INDEX \`project_tasks_assignedToId_idx\`(\`assignedToId\`),
+        INDEX \`project_tasks_status_idx\`(\`status\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `project_tasks` created.');
+  } else {
+    console.log('[Deploy] Table `project_tasks`: OK');
+  }
+
+  // 4. project_time_logs
+  const hasTimeLogs = await tableExists('project_time_logs');
+  if (!hasTimeLogs) {
+    console.log('[Deploy] Creating table `project_time_logs`...');
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`project_time_logs\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`projectId\` VARCHAR(191) NOT NULL,
+        \`taskId\` VARCHAR(191) NULL,
+        \`userId\` VARCHAR(191) NOT NULL,
+        \`hours\` DOUBLE NOT NULL,
+        \`workDate\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`description\` TEXT NULL,
+        \`isBillable\` BOOLEAN NOT NULL DEFAULT true,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        INDEX \`project_time_logs_projectId_idx\`(\`projectId\`),
+        INDEX \`project_time_logs_userId_idx\`(\`userId\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `project_time_logs` created.');
+  } else {
+    console.log('[Deploy] Table `project_time_logs`: OK');
+  }
+
+  // 5. project_handovers
+  const hasHandovers = await tableExists('project_handovers');
+  if (!hasHandovers) {
+    console.log('[Deploy] Creating table `project_handovers`...');
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`project_handovers\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`projectId\` VARCHAR(191) NOT NULL,
+        \`stage\` VARCHAR(50) NOT NULL,
+        \`status\` VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+        \`releaseNotes\` TEXT NULL,
+        \`checklist\` JSON NULL,
+        \`signOffByName\` VARCHAR(191) NULL,
+        \`signOffDate\` DATETIME(3) NULL,
+        \`signedOffById\` VARCHAR(191) NULL,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        INDEX \`project_handovers_projectId_idx\`(\`projectId\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `project_handovers` created.');
+  } else {
+    console.log('[Deploy] Table `project_handovers`: OK');
+  }
+}
+
+async function ensureAiEmployeeSchema() {
+  console.log('[Deploy] Checking database schema for 7 Autonomous AI Employees...');
+
+  const hasAiAgents = await tableExists('ai_agents');
+  if (!hasAiAgents) {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`ai_agents\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`tenantId\` VARCHAR(191) NOT NULL DEFAULT 'default',
+        \`code\` VARCHAR(50) NOT NULL,
+        \`name\` VARCHAR(191) NOT NULL,
+        \`roleTitle\` VARCHAR(191) NOT NULL,
+        \`description\` TEXT NULL,
+        \`status\` VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+        \`executionMode\` VARCHAR(50) NOT NULL DEFAULT 'AUTOMATIC',
+        \`scheduleCron\` VARCHAR(100) NULL,
+        \`dailyBudget\` DOUBLE NOT NULL DEFAULT 5.0,
+        \`spentToday\` DOUBLE NOT NULL DEFAULT 0.0,
+        \`lastRunAt\` DATETIME(3) NULL,
+        \`lastSuccessAt\` DATETIME(3) NULL,
+        \`failureCount\` INT NOT NULL DEFAULT 0,
+        \`config\` JSON NULL,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        UNIQUE INDEX \`ai_agents_code_key\`(\`code\`),
+        INDEX \`ai_agents_tenantId_idx\`(\`tenantId\`),
+        INDEX \`ai_agents_status_idx\`(\`status\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `ai_agents` created.');
+  } else {
+    console.log('[Deploy] Table `ai_agents`: OK');
+  }
+
+  const hasTaskExec = await tableExists('ai_task_executions');
+  if (!hasTaskExec) {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`ai_task_executions\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`tenantId\` VARCHAR(191) NOT NULL DEFAULT 'default',
+        \`agentId\` VARCHAR(191) NOT NULL,
+        \`agentCode\` VARCHAR(50) NOT NULL,
+        \`taskType\` VARCHAR(100) NOT NULL,
+        \`triggerEvent\` VARCHAR(100) NOT NULL,
+        \`entityType\` VARCHAR(50) NULL,
+        \`entityId\` VARCHAR(191) NULL,
+        \`status\` VARCHAR(50) NOT NULL DEFAULT 'QUEUED',
+        \`inputPayload\` JSON NULL,
+        \`outputResult\` JSON NULL,
+        \`errorMessage\` TEXT NULL,
+        \`retryCount\` INT NOT NULL DEFAULT 0,
+        \`executionTimeMs\` INT NOT NULL DEFAULT 0,
+        \`tokensUsed\` INT NOT NULL DEFAULT 0,
+        \`costEstimate\` DOUBLE NOT NULL DEFAULT 0.0,
+        \`startedAt\` DATETIME(3) NULL,
+        \`completedAt\` DATETIME(3) NULL,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        INDEX \`ai_task_executions_agentCode_idx\`(\`agentCode\`),
+        INDEX \`ai_task_executions_status_idx\`(\`status\`),
+        INDEX \`ai_task_executions_createdAt_idx\`(\`createdAt\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `ai_task_executions` created.');
+  } else {
+    console.log('[Deploy] Table `ai_task_executions`: OK');
+  }
+
+  const hasApprovals = await tableExists('ai_approval_requests');
+  if (!hasApprovals) {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`ai_approval_requests\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`tenantId\` VARCHAR(191) NOT NULL DEFAULT 'default',
+        \`agentId\` VARCHAR(191) NOT NULL,
+        \`agentCode\` VARCHAR(50) NOT NULL,
+        \`taskExecutionId\` VARCHAR(191) NULL,
+        \`actionType\` VARCHAR(100) NOT NULL,
+        \`entityType\` VARCHAR(50) NOT NULL,
+        \`entityId\` VARCHAR(191) NOT NULL,
+        \`proposedPayload\` JSON NULL,
+        \`reason\` TEXT NOT NULL,
+        \`riskLevel\` VARCHAR(50) NOT NULL DEFAULT 'MEDIUM',
+        \`status\` VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+        \`decisionNotes\` TEXT NULL,
+        \`decidedById\` VARCHAR(191) NULL,
+        \`decidedByName\` VARCHAR(191) NULL,
+        \`decidedAt\` DATETIME(3) NULL,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        INDEX \`ai_approval_requests_status_idx\`(\`status\`),
+        INDEX \`ai_approval_requests_agentCode_idx\`(\`agentCode\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `ai_approval_requests` created.');
+  } else {
+    console.log('[Deploy] Table `ai_approval_requests`: OK');
+  }
+
+  const hasDailyMetrics = await tableExists('ai_daily_metrics');
+  if (!hasDailyMetrics) {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS \`ai_daily_metrics\` (
+        \`id\` VARCHAR(191) NOT NULL,
+        \`tenantId\` VARCHAR(191) NOT NULL DEFAULT 'default',
+        \`agentCode\` VARCHAR(50) NOT NULL,
+        \`metricDate\` VARCHAR(50) NOT NULL,
+        \`totalJobs\` INT NOT NULL DEFAULT 0,
+        \`successJobs\` INT NOT NULL DEFAULT 0,
+        \`failedJobs\` INT NOT NULL DEFAULT 0,
+        \`totalTokens\` INT NOT NULL DEFAULT 0,
+        \`totalCost\` DOUBLE NOT NULL DEFAULT 0.0,
+        \`createdAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+        \`updatedAt\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        UNIQUE INDEX \`ai_daily_metrics_agent_date_key\`(\`agentCode\`, \`metricDate\`),
+        PRIMARY KEY (\`id\`)
+      ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    `);
+    console.log('[Deploy] Table `ai_daily_metrics` created.');
+  } else {
+    console.log('[Deploy] Table `ai_daily_metrics`: OK');
+  }
+}
+
 async function main() {
   console.log('[Deploy] ===== AAA Backend Startup =====');
 
@@ -504,6 +785,12 @@ async function main() {
 
     await ensureSmartQrSchema();
     console.log('[Deploy] All Smart QR database schema checks complete.');
+
+    await ensureItProjectSchema();
+    console.log('[Deploy] All IT Project database schema checks complete.');
+
+    await ensureAiEmployeeSchema();
+    console.log('[Deploy] All 7 AI Employees database schema checks complete.');
   } catch (err) {
     console.error(`[Deploy] FATAL: Database schema initialization failed: ${err.message}`);
     process.exit(1);
