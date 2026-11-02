@@ -587,7 +587,7 @@ exports.verifyMetaWebhook = (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  const verifyToken = process.env.META_VERIFY_TOKEN || 'aaa_consultancy_secret_token';
+  const verifyToken = process.env.META_VERIFY_TOKEN || 'whatsapp_kiaan_secret_token';
 
   if (mode && token) {
     if (mode === 'subscribe' && token === verifyToken) {
@@ -958,7 +958,7 @@ exports.handleTwitterWebhook = async (req, res) => {
       // Save to database
       await prisma.communicationLog.create({
         data: {
-          phone: cleanSender,
+          phone: cleanSender, 
           name: senderDisplayName,
           channel: 'TWITTER',
           direction: 'INBOUND',

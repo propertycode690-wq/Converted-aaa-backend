@@ -128,24 +128,12 @@ exports.sendAutomatedLinkedInGreeting = async (senderId, senderName) => {
     if (!cleanId) return;
 
     // Check if an outbound message was already sent to this LinkedIn user in the last 12 hours
-    const recentOutbound = await prisma.communicationLog.findFirst({
-      where: {
-        phone: cleanId,
-        channel: 'LINKEDIN',
-        direction: 'OUTBOUND',
-        createdAt: { gte: new Date(Date.now() - 12 * 60 * 60 * 1000) }
-      }
-    });
+    // Cooldown removed: reply will be sent on every message
 
-    if (recentOutbound) {
-      console.log(`[Automated LinkedIn Greeting] Skipped: Recent outbound message already sent to ${cleanId} within 12h.`);
-      return;
-    }
 
     const clientName = (senderName && !senderName.includes('LinkedIn User')) ? senderName : 'Valued Client';
-    const leadFormUrl = `https://aaa-crm-service.netlify.app/#/public/lead-form?source=LinkedIn&liId=${encodeURIComponent(cleanId)}`;
 
-    const greetingText = `Greetings from AAA Business Consultancy LLC! ✈️🇪🇸\n\nDear ${clientName},\nThank you for connecting with us on LinkedIn regarding Spain Visa & Residency Services.\n\nTo book your FREE 20-Minute Eligibility Assessment & Document Verification, please click the link below to complete your initial details:\n\n👉 ${leadFormUrl}\n\nOnce submitted, our dedicated immigration consultant will reach out to assist you.`;
+    const greetingText = `Greetings from Kiaan Technology! 💻🚀\n\nDear ${clientName},\nThank you for connecting with us regarding our IT Services & Software Solutions.\n\nOur team has received your message. Please share your project requirements or questions here, and our technical solutions team will assist you right away!`;
 
     // 1. Send LinkedIn DM
     await exports.sendLinkedInDM(cleanId, greetingText);
@@ -267,6 +255,6 @@ exports.replyToLinkedInComment = async (commentUrn, replyText) => {
  */
 exports.getBookingFormQuickTemplate = (clientName) => {
   const name = clientName && !clientName.includes('User') ? clientName : 'there';
-  return `Hello @${name}! Thank you for reaching out to AAA Business Consultancy LLC. 🇪🇸✈️\n\nTo check your full eligibility for Spain Visa & Residency (Digital Nomad, Non-Lucrative, Golden Visa) and schedule your FREE consultation, please fill out our quick assessment form here:\n👉 https://aaa-crm-service.netlify.app/#/public/lead-form?source=LinkedIn_Comment\n\nOur team looks forward to assisting you!`;
+  return `Hello @${name}! Thank you for reaching out to Kiaan Technology! 💻🚀\n\nWe provide modern IT Services, Custom Software Development, and Cloud Solutions. Please share your requirements or questions here, and our technical team will assist you!`;
 };
 

@@ -110,24 +110,12 @@ exports.sendAutomatedTwitterGreeting = async (senderId, senderName) => {
     if (!cleanId) return;
 
     // Check if an outbound message was sent in last 12 hours
-    const recentOutbound = await prisma.communicationLog.findFirst({
-      where: {
-        phone: cleanId,
-        channel: 'TWITTER',
-        direction: 'OUTBOUND',
-        createdAt: { gte: new Date(Date.now() - 12 * 60 * 60 * 1000) }
-      }
-    });
+    // Cooldown removed: reply will be sent on every message
 
-    if (recentOutbound) {
-      console.log(`[Automated Twitter Greeting] Skipped: Outbound message already sent to ${cleanId} within 12h.`);
-      return;
-    }
 
     const clientName = (senderName && !senderName.includes('Twitter User')) ? senderName : 'Valued Client';
-    const leadFormUrl = `https://aaa-crm-service.netlify.app/#/public/lead-form?source=Twitter&twId=${encodeURIComponent(cleanId)}`;
 
-    const greetingText = `Greetings from AAA Business Consultancy LLC! ✈️🇪🇸\n\nDear ${clientName},\nThank you for reaching out to us on Twitter/X regarding Spain Visa & Residency Services.\n\nTo book your FREE 20-Minute Eligibility Assessment & Verification, please complete your details here:\n\n👉 ${leadFormUrl}\n\nOur immigration consultant will reach out to you shortly.`;
+    const greetingText = `Greetings from Kiaan Technology! 💻🚀\n\nDear ${clientName},\nThank you for reaching out to us regarding our IT Services & Software Solutions.\n\nOur team has received your message. Please share your project requirements or questions here, and our technical solutions team will assist you right away!`;
 
     // 1. Dispatch Twitter DM
     await exports.sendTwitterDM(cleanId, greetingText);

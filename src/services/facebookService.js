@@ -105,26 +105,12 @@ exports.sendAutomatedFacebookGreeting = async (senderId, senderName) => {
     const cleanId = (senderId || '').replace(/[^\d]/g, '');
     if (!cleanId) return;
 
-    // Check if an outbound automated message was sent to this senderId in the last 12 hours
-    const recentOutbound = await prisma.communicationLog.findFirst({
-      where: {
-        phone: cleanId,
-        channel: 'FACEBOOK',
-        direction: 'OUTBOUND',
-        createdAt: { gte: new Date(Date.now() - 12 * 60 * 60 * 1000) }
-      }
-    });
+    // Cooldown removed: reply will be sent on every message
 
-    if (recentOutbound) {
-      console.log(`[Automated Facebook Greeting] Skipped: Recent outbound message already sent to ${cleanId} within 12h.`);
-      return;
-    }
 
     const clientName = (senderName && !senderName.includes('Meta User')) ? senderName : 'Valued Client';
-    const frontendBaseUrl = process.env.FRONTEND_URL || 'https://kiaantechnology.com';
-    const leadFormUrl = `${frontendBaseUrl}/#/public/lead-form?source=Facebook&fbId=${encodeURIComponent(cleanId)}`;
 
-    const greetingText = `Hello ${clientName}! 👋\n\nThank you for reaching out to Kiaan Technology! 💻🚀\n\nWe provide modern IT Services, Custom Software Development, Web & Mobile App Solutions, and Cloud Services.\n\nPlease let us know how we can assist you today, or click below to share your project requirements:\n👉 ${leadFormUrl}\n\nOur technical team will review your requirements and get in touch with you shortly.`;
+    const greetingText = `Greetings from Kiaan Technology! 💻🚀\n\nDear ${clientName},\nThank you for reaching out to us regarding our IT Services & Software Solutions.\n\nOur team has received your message. Please share your project requirements or questions here, and our technical solutions team will assist you right away!`;
 
     // 1. Send FB Messenger DM via Graph API
     await exports.sendMessengerMessage(cleanId, greetingText);
