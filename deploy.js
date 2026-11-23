@@ -771,6 +771,33 @@ async function ensureAiEmployeeSchema() {
   } else {
     console.log('[Deploy] Table `ai_daily_metrics`: OK');
   }
+
+  // Ensure default 7 AI employees are seeded if table is empty
+  try {
+    const agentCount = await prisma.aiAgent.count();
+    if (agentCount === 0) {
+      console.log('[Deploy] Seeding 7 Autonomous AI Employees in production database...');
+      const SEED_AGENTS = [
+        { id: 'agent_sales_01', code: 'sales_ai', name: 'Sales & Lead Management AI', roleTitle: 'Lead Qualification AI', dailyBudget: 10.0, status: 'ACTIVE' },
+        { id: 'agent_project_02', code: 'project_ai', name: 'Project & Task Management AI', roleTitle: 'Agile Delivery AI', dailyBudget: 10.0, status: 'ACTIVE' },
+        { id: 'agent_dev_03', code: 'dev_ai', name: 'DevOps & Code Quality AI', roleTitle: 'CI/CD & Code Quality AI', dailyBudget: 10.0, status: 'ACTIVE' },
+        { id: 'agent_support_04', code: 'support_ai', name: 'Customer Support & SLA AI', roleTitle: 'SLA Escalation AI', dailyBudget: 10.0, status: 'ACTIVE' },
+        { id: 'agent_finance_05', code: 'finance_ai', name: 'Finance & Invoicing AI', roleTitle: 'Payment & Invoice AI', dailyBudget: 10.0, status: 'ACTIVE' },
+        { id: 'agent_ops_06', code: 'ops_ai', name: 'Operations & Workflow AI', roleTitle: 'Process Compliance AI', dailyBudget: 10.0, status: 'ACTIVE' },
+        { id: 'agent_ceo_07', code: 'ceo_supervisor_ai', name: 'CEO Executive Supervisor AI', roleTitle: 'Orchestrator AI', dailyBudget: 10.0, status: 'ACTIVE' }
+      ];
+      for (const a of SEED_AGENTS) {
+        await prisma.aiAgent.upsert({
+          where: { code: a.code },
+          update: {},
+          create: a
+        });
+      }
+      console.log('[Deploy] 7 Autonomous AI Employees seeded successfully.');
+    }
+  } catch (err) {
+    console.warn('[Deploy] AI agent seeding warning:', err.message);
+  }
 }
 
 async function main() {

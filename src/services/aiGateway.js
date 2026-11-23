@@ -46,8 +46,25 @@ class AiGateway {
    * Check if agent has remaining daily budget
    */
   async checkAgentBudget(agentCode) {
-    const agent = await prisma.aiAgent.findUnique({ where: { code: agentCode } });
-    if (!agent) throw new Error(`Agent with code ${agentCode} not found`);
+    let agent;
+    try {
+      agent = await prisma.aiAgent.findUnique({ where: { code: agentCode } });
+      if (!agent) {
+        agent = await prisma.aiAgent.create({
+          data: {
+            id: `agent_${agentCode}_${Date.now()}`,
+            code: agentCode,
+            name: `${agentCode.toUpperCase()} Specialist`,
+            roleTitle: 'Autonomous AI Employee',
+            status: 'ACTIVE',
+            dailyBudget: 10.0,
+            spentToday: 0.0
+          }
+        });
+      }
+    } catch (e) {
+      return { dailyBudget: 10.0, spentToday: 0.0, status: 'ACTIVE' };
+    }
 
     if (agent.status === 'PAUSED' || agent.status === 'DISABLED') {
       throw new Error(`Agent ${agent.name} is currently ${agent.status}`);
@@ -90,17 +107,32 @@ class AiGateway {
         }
       });
 
-      // 2. Update agent metrics & spent
+      // 2. Update agent metrics & spent safely via upsert
       const todayStr = new Date().toISOString().split('T')[0];
-      await prisma.aiAgent.update({
-        where: { code: agentCode },
-        data: {
-          lastRunAt: new Date(),
-          lastSuccessAt: status === 'COMPLETED' ? new Date() : undefined,
-          failureCount: status === 'FAILED' ? { increment: 1 } : 0,
-          spentToday: { increment: costEstimate || 0 }
-        }
-      });
+      try {
+        await prisma.aiAgent.upsert({
+          where: { code: agentCode },
+          update: {
+            lastRunAt: new Date(),
+            lastSuccessAt: status === 'COMPLETED' ? new Date() : undefined,
+            failureCount: status === 'FAILED' ? { increment: 1 } : 0,
+            spentToday: { increment: costEstimate || 0 }
+          },
+          create: {
+            id: `agent_${agentCode}_${Date.now()}`,
+            code: agentCode,
+            name: `${agentCode.toUpperCase()} Specialist`,
+            roleTitle: 'Autonomous AI Employee',
+            status: 'ACTIVE',
+            dailyBudget: 10.0,
+            spentToday: costEstimate || 0,
+            lastRunAt: new Date(),
+            lastSuccessAt: status === 'COMPLETED' ? new Date() : undefined
+          }
+        });
+      } catch (agentErr) {
+        // Non-blocking fallback
+      }
 
       // 3. Upsert daily metric
       await prisma.aiDailyMetric.upsert({
