@@ -7,6 +7,7 @@ const {
   updateLeadStages,
   getCompanySettings,
   updateCompanySettings,
+  uploadLogo,
   getVisaServices,
   updateVisaServices,
   getPackages,
@@ -22,16 +23,18 @@ const {
   purgeAllData,
   purgeFinanceData
 } = require('../controllers/settingsController');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, rbacMiddleware } = require('../middlewares/authMiddleware');
+const upload = require('../middlewares/uploadMiddleware');
 
 const router = express.Router();
 
-router.delete('/purge-all-data', authMiddleware, purgeAllData);
-router.delete('/purge-finance', authMiddleware, purgeFinanceData);
+router.delete('/purge-all-data', authMiddleware, rbacMiddleware(['super_admin']), purgeAllData);
+router.delete('/purge-finance', authMiddleware, rbacMiddleware(['super_admin']), purgeFinanceData);
 
 router.route('/customization')
   .get(getCustomizationSettings)
-  .put(authMiddleware, updateCustomizationSettings);
+  .put(authMiddleware, updateCustomizationSettings)
+  .post(authMiddleware, updateCustomizationSettings);
 
 router.route('/lead-stages')
   .get(authMiddleware, getLeadStages)
@@ -42,6 +45,8 @@ router.get('/exchange-rates', getExchangeRates);
 router.route('/company')
   .get(getCompanySettings)
   .put(authMiddleware, updateCompanySettings);
+
+router.post('/logo', authMiddleware, upload.single('logo'), uploadLogo);
 
 router.route('/services')
   .get(authMiddleware, getVisaServices)

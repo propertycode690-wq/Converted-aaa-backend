@@ -325,8 +325,26 @@ async function logCommunication(phone, messageText, direction, name = 'Applicant
   }
 }
 
+const CHATBOT_SYSTEM_PROMPT = `You are the official Virtual Sales & Support Assistant for AAA Business Consultancy & Kiaan Technology.
+Our company specializes STRICTLY in:
+1. Custom Software & SaaS Application Development
+2. Web & Mobile App Development (iOS, Android, React Native, Flutter)
+3. AI, Machine Learning & Intelligent Automation Solutions (Chatbots, Custom LLMs, Voice Agents, Workflow Automations)
+4. Cloud Architecture, DevOps & Infrastructure (AWS, Azure, Docker, Kubernetes, CI/CD)
+5. UI/UX Product Design, Wireframing & Prototyping
+6. Dedicated Engineering Teams & Technical Staffing
+7. IT Business Consulting & Project Scoping
+
+STRICT OPERATIONAL RULES (NO EXCEPTIONS):
+- ONLY answer questions directly related to our company's IT services, development process, technology capabilities, project pricing/timelines, and consultation scheduling.
+- NEVER answer general knowledge, unrelated topics, politics, entertainment, sports, coding homework, recipes, personal advice, or other third-party companies.
+- If the user asks ANY question not related to our IT services or business consultancy, politely decline:
+  "I am the assistant for AAA Business Consultancy & Kiaan Technology. I can only assist with inquiries regarding our software development, mobile apps, AI solutions, and IT consultancy services. If you have an IT project or need technical consulting, please let us know how we can help, or reply 'agent' to speak with our specialists."
+- Keep your responses concise (2 to 3 sentences maximum), polite, professional, and business-focused.
+- Always encourage the user to schedule a discovery consultation or reply 'agent' to connect directly with a senior consultant.`;
+
 /**
- * Queries OpenAI completions API for general visa enquiries.
+ * Queries OpenAI completions API for general enquiries.
  */
 async function getOpenAIAnswer(userQuery) {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -337,11 +355,12 @@ async function getOpenAIAnswer(userQuery) {
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful technical customer support chatbot for Kiaan Technology. We build custom software, web & mobile applications, AI/ML solutions, SaaS systems, and cloud architecture. Answer briefly, professionally, and keep it under 3 sentences. Mention that the user can reply "agent" to talk to a human consultant.'
+          content: CHATBOT_SYSTEM_PROMPT
         },
         { role: 'user', content: userQuery }
       ],
-      max_tokens: 150
+      max_tokens: 180,
+      temperature: 0.3
     },
     {
       headers: {
@@ -354,7 +373,7 @@ async function getOpenAIAnswer(userQuery) {
 }
 
 /**
- * Queries Google Gemini API for general visa enquiries.
+ * Queries Google Gemini API for general enquiries.
  */
 async function getGeminiAnswer(userQuery) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -365,13 +384,14 @@ async function getGeminiAnswer(userQuery) {
         {
           parts: [
             {
-              text: `You are a helpful technical customer support chatbot for Kiaan Technology. We build custom software, web & mobile applications, AI/ML solutions, SaaS systems, and cloud architecture. Answer briefly, professionally, and keep it under 3 sentences. Mention that the user can reply "agent" to talk to a human consultant. User Question: ${userQuery}`
+              text: `${CHATBOT_SYSTEM_PROMPT}\n\nUser Question: ${userQuery}`
             }
           ]
         }
       ],
       generationConfig: {
-        maxOutputTokens: 150
+        maxOutputTokens: 180,
+        temperature: 0.3
       }
     },
     {
@@ -384,3 +404,6 @@ async function getGeminiAnswer(userQuery) {
 }
 
 exports.sendCustomWhatsApp = sendCustomWhatsApp;
+exports.getOpenAIAnswer = getOpenAIAnswer;
+exports.getGeminiAnswer = getGeminiAnswer;
+exports.CHATBOT_SYSTEM_PROMPT = CHATBOT_SYSTEM_PROMPT;

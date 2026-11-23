@@ -124,9 +124,6 @@ exports.getProjectById = async (req, res) => {
             user: { select: { id: true, fullName: true } },
             task: { select: { id: true, title: true } }
           }
-        },
-        reviews: {
-          orderBy: { createdAt: 'desc' }
         }
       }
     });
@@ -135,11 +132,27 @@ exports.getProjectById = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Project not found.' });
     }
 
+    // Role-based access scoping for project details
+    const user = req.user;
+    if (user && user.role === 'client') {
+      if (project.clientId !== user.id) {
+        return res.status(403).json({ success: false, message: 'Access denied. You can only view your own projects.' });
+      }
+    } else if (user && !['admin', 'super_admin', 'finance'].includes(user.role)) {
+      const isManager = project.projectManagerId === user.id || project.deliveryManagerId === user.id;
+      const isAssignedToTask = Array.isArray(project.tasks) && project.tasks.some(t => t.assignedTo?.id === user.id || t.assignedToId === user.id);
+      if (!isManager && !isAssignedToTask) {
+        return res.status(403).json({ success: false, message: 'Access denied. You are not authorized to view this project.' });
+      }
+    }
+
     // Calculate aggregated metrics
-    const totalHoursLogged = project.timeLogs.reduce((acc, log) => acc + (log.hours || 0), 0);
-    const completedTasksCount = project.tasks.filter(t => t.status === 'DONE').length;
-    const taskCompletionRate = project.tasks.length > 0
-      ? Math.round((completedTasksCount / project.tasks.length) * 100)
+    const timeLogsList = Array.isArray(project.timeLogs) ? project.timeLogs : [];
+    const tasksList = Array.isArray(project.tasks) ? project.tasks : [];
+    const totalHoursLogged = timeLogsList.reduce((acc, log) => acc + (log.hours || 0), 0);
+    const completedTasksCount = tasksList.filter(t => t.status === 'DONE').length;
+    const taskCompletionRate = tasksList.length > 0
+      ? Math.round((completedTasksCount / tasksList.length) * 100)
       : 0;
 
     res.json({
@@ -525,6 +538,12 @@ exports.deleteTimeLog = async (req, res) => {
     const existing = await prisma.projectTimeLog.findUnique({ where: { id: logId } });
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Time log not found.' });
+    }
+
+    const isAdmin = req.user && ['admin', 'super_admin'].includes(req.user.role);
+    const isOwner = req.user && existing.userId === req.user.id;
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ success: false, message: 'Access denied. You can only delete your own time logs.' });
     }
 
     // Deduct actualHours from task if linked

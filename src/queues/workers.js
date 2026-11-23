@@ -41,7 +41,7 @@ const setupWorkers = () => {
           if (lowerText.includes('/spain') || lowerText.includes('visa')) {
             responseText = `<b>Spain Relocation Pathways</b> ✈️\n\nWe specialize in:\n• Digital Nomad Visa (DNV)\n• Non-Lucrative Visa (NLV)\n• Golden Visa (Property Investment)\n• Student & Schengen Visas\n\nReply /book to secure an intake slot with our advisors.`;
           } else if (lowerText.includes('/book') || lowerText.includes('book') || lowerText.includes('assess')) {
-            responseText = `<b>Book Assessment</b> 📅\n\nPlease secure your consultation call using this link: https://aaabusinessconsultancy.com/book-assessment`;
+            responseText = `<b>Book Assessment</b> 📅\n\nPlease secure your consultation call using this link: https://kiaantechnology.com/book-assessment`;
           }
           
           await telegramService.sendTelegramMessage(chatId, responseText);
@@ -72,7 +72,7 @@ const setupWorkers = () => {
           // await axios.post(`https://graph.facebook.com/v17.0/${commentId}/comments`, { message: ... })
           
           // Log reply simulation
-          console.log(`[Auto-Reply Simulated] "Hi @${senderName}, thank you for reaching out! We've sent you a DM to get started, or you can book an assessment directly here: https://aaabusinessconsultancy.com/book-assessment"`);
+          console.log(`[Auto-Reply Simulated] "Hi @${senderName}, thank you for reaching out! We've sent you a DM to get started, or you can book an assessment directly here: https://kiaantechnology.com/book-assessment"`);
         }
       } catch (err) {
         console.error('Failed to process meta comment auto-reply job:', err);

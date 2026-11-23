@@ -1,33 +1,85 @@
 let DEFAULT_CUSTOMIZATION = {
   rolesDefinition: [
+    { id: 'super_admin', label: 'Super Admin / Managing Director' },
     { id: 'admin', label: 'Admin / Project Manager' },
     { id: 'operations', label: 'Tech Lead / DevOps / QA' },
     { id: 'finance', label: 'Finance Officer' },
     { id: 'consultant', label: 'Solutions Consultant / Sales BDM' },
     { id: 'marketing', label: 'Marketing & Growth Manager' }
   ],
+  super_admin: {
+    menus: [
+      'Dashboard',
+      'AI Employees (24/7)',
+      'Leads',
+      'Projects',
+      'Active Projects',
+      'Archived Projects',
+      'Closed Cases',
+      'Social Inbox',
+      'Calendar',
+      'Team',
+      'User Management',
+      'Marketing',
+      'Reviews',
+      'Integrations',
+      'General Settings',
+      'Settings'
+    ],
+    cards: ['Total Clients', 'Today\'s Clients', 'Total Inquiries', 'Today\'s Inquiries', 'Upcoming Meetings', 'Pending Payments', 'Total Revenue', 'Active Projects', 'Completed Projects', 'Lost Inquiries', 'Revenue Today', 'Outstanding Revenue'],
+    features: []
+  },
   admin: {
-    menus: ['Dashboard', 'Team', 'Active Projects', 'Archived Projects', 'Leads', 'Social Inbox', 'Marketing', 'Calendar', 'All Agents Performance', 'Integrations'],
-    cards: ['Total Clients', 'Today\'s Clients', 'Total Inquiries', 'Today\'s Inquiries', 'Upcoming Meetings', 'Pending Payments', 'Total Revenue', 'Active Projects', 'Completed Projects', 'Lost Inquiries', 'Revenue Today', 'Outstanding Revenue', 'Refunded (Guarantee Claims)'],
-    features: ['canEditTranslationRates']
+    menus: [
+      'Dashboard',
+      'AI Employees (24/7)',
+      'Leads',
+      'Projects',
+      'Active Projects',
+      'Archived Projects',
+      'Closed Cases',
+      'Social Inbox',
+      'Calendar',
+      'Team',
+      'User Management',
+      'Marketing',
+      'Reviews',
+      'Integrations',
+      'General Settings',
+      'Settings'
+    ],
+    cards: ['Total Clients', 'Today\'s Clients', 'Total Inquiries', 'Today\'s Inquiries', 'Upcoming Meetings', 'Pending Payments', 'Total Revenue', 'Active Projects', 'Completed Projects', 'Lost Inquiries', 'Revenue Today', 'Outstanding Revenue'],
+    features: []
   },
   operations: {
-    menus: ['Dashboard', 'Team', 'Active Projects', 'Archived Projects', 'Leads', 'Social Inbox', 'Marketing', 'Calendar', 'All Agents Performance'],
+    menus: [
+      'Dashboard',
+      'AI Employees (24/7)',
+      'Projects',
+      'Active Projects',
+      'Archived Projects',
+      'Closed Cases',
+      'Calendar',
+      'Team',
+      'Reviews',
+      'General Settings',
+      'Settings'
+    ],
     cards: ['Total Clients', 'Today\'s Clients', 'Total Inquiries', 'Today\'s Inquiries', 'Upcoming Meetings', 'Active Projects', 'Completed Projects'],
     features: []
   },
   finance: {
-    menus: ['Dashboard'],
+    menus: ['Dashboard', 'Projects', 'Active Projects', 'Archived Projects', 'Closed Cases', 'General Settings', 'Settings'],
     cards: ['Total Revenue', 'Pending Payments'],
     features: []
   },
   consultant: {
-    menus: ['Dashboard', 'Leads', 'Social Inbox', 'Calendar'],
+    menus: ['Dashboard', 'AI Employees (24/7)', 'Leads', 'Projects', 'Active Projects', 'Social Inbox', 'Calendar', 'Team'],
     cards: ['Upcoming Meetings', 'Active Projects'],
     features: []
   },
   marketing: {
-    menus: ['Dashboard', 'Leads', 'Marketing'],
+    menus: ['Dashboard', 'AI Employees (24/7)', 'Leads', 'Social Inbox', 'Marketing', 'Reviews', 'Calendar'],
     cards: ['Total Inquiries', 'Today\'s Inquiries'],
     features: []
   },
@@ -237,10 +289,22 @@ const getCompanySettings = async (req, res) => {
     let settings = await prisma.companySetting.findFirst();
     if (!settings) {
       settings = await prisma.companySetting.create({
-        data: {}
+        data: {
+          companyName: 'Kiaan Technology CRM',
+          email: 'contact@kiaantechnology.com',
+          website: 'https://kiaantechnology.com',
+          vatId: 'TAX-KT-2026-9932',
+          address: 'Kiaan Technologies HQ, Tech Park, Innovation Hub',
+          phone: '+91 98765 43210',
+          incorporationDate: '2021-04-15'
+        }
       });
     }
-    res.json(settings);
+    const logoUrl = settings?.customizationSettings?.logoUrl || '/kiaan-logo.svg';
+    res.json({
+      ...settings,
+      logoUrl
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -248,8 +312,21 @@ const getCompanySettings = async (req, res) => {
 
 const updateCompanySettings = async (req, res) => {
   try {
-    const data = req.body;
+    const data = { ...req.body };
+    const incomingLogoUrl = data.logoUrl;
+    delete data.logoUrl;
+
     let settings = await prisma.companySetting.findFirst();
+    let currentCustomization = settings?.customizationSettings || {};
+
+    if (incomingLogoUrl !== undefined) {
+      currentCustomization = {
+        ...currentCustomization,
+        logoUrl: incomingLogoUrl
+      };
+      data.customizationSettings = currentCustomization;
+    }
+
     if (!settings) {
       settings = await prisma.companySetting.create({ data });
     } else {
@@ -258,9 +335,71 @@ const updateCompanySettings = async (req, res) => {
         data
       });
     }
-    res.json(settings);
+    const logoUrl = settings?.customizationSettings?.logoUrl || '/kiaan-logo.svg';
+    res.json({
+      ...settings,
+      logoUrl
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+const uploadLogo = async (req, res) => {
+  try {
+    let logoUrl = null;
+
+    if (req.file) {
+      if (req.file.location) {
+        logoUrl = req.file.location;
+      } else {
+        const baseUrl = process.env.VITE_API_URL 
+          ? process.env.VITE_API_URL.replace('/api/v1', '') 
+          : 'http://localhost:5000';
+        logoUrl = `${baseUrl}/uploads/${req.file.filename}`;
+      }
+    } else if (req.body && (req.body.logoUrl || req.body.logo)) {
+      logoUrl = req.body.logoUrl || req.body.logo;
+    }
+
+    if (!logoUrl) {
+      return res.status(400).json({ success: false, message: 'No logo image file or URL provided' });
+    }
+
+    let settings = await prisma.companySetting.findFirst();
+    const currentCustomization = settings?.customizationSettings || {};
+    const updatedCustomization = {
+      ...currentCustomization,
+      logoUrl
+    };
+
+    if (!settings) {
+      settings = await prisma.companySetting.create({
+        data: {
+          customizationSettings: updatedCustomization
+        }
+      });
+    } else {
+      settings = await prisma.companySetting.update({
+        where: { id: settings.id },
+        data: {
+          customizationSettings: updatedCustomization
+        }
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logo updated successfully',
+      logoUrl,
+      settings: {
+        ...settings,
+        logoUrl
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading logo:', error);
+    return res.status(500).json({ success: false, message: 'Server error uploading logo', error: error.message });
   }
 };
 
@@ -581,14 +720,22 @@ const updateWhatsappTemplates = async (req, res) => {
 
 const purgeAllData = async (req, res) => {
   try {
+    if (!req.user || req.user.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Access denied. Super Admin privileges required.' });
+    }
+
+    console.warn(`[SECURITY AUDIT] Full database purge initiated by super_admin: ${req.user.email || req.user.id}`);
     console.log('[PURGE] Starting full database cleanup...');
 
     await prisma.communicationLog.deleteMany({}).catch(() => {});
     await prisma.consultation.deleteMany({}).catch(() => {});
-    await prisma.caseFile.deleteMany({}).catch(() => {});
     await prisma.document.deleteMany({}).catch(() => {});
     await prisma.applicationCycle.deleteMany({}).catch(() => {});
-    await prisma.caseComment.deleteMany({}).catch(() => {});
+    await prisma.projectTimeLog.deleteMany({}).catch(() => {});
+    await prisma.projectTask.deleteMany({}).catch(() => {});
+    await prisma.projectMilestone.deleteMany({}).catch(() => {});
+    await prisma.projectHandover.deleteMany({}).catch(() => {});
+    await prisma.project.deleteMany({}).catch(() => {});
     await prisma.payment.deleteMany({}).catch(() => {});
     await prisma.lead.deleteMany({}).catch(() => {});
     await prisma.client.deleteMany({}).catch(() => {});
@@ -607,6 +754,11 @@ const purgeAllData = async (req, res) => {
 
 const purgeFinanceData = async (req, res) => {
   try {
+    if (!req.user || req.user.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Access denied. Super Admin privileges required.' });
+    }
+
+    console.warn(`[SECURITY AUDIT] Finance data purge initiated by super_admin: ${req.user.email || req.user.id}`);
     console.log('[PURGE] Wiping Finance & Payment records...');
     await prisma.payment.deleteMany({});
     await prisma.refundRequest.deleteMany({}).catch(() => {});
@@ -687,6 +839,7 @@ module.exports = {
   updateLeadStages,
   getCompanySettings,
   updateCompanySettings,
+  uploadLogo,
   getVisaServices,
   updateVisaServices,
   getPackages,

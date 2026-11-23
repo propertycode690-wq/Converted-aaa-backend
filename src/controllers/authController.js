@@ -14,17 +14,27 @@ const login = async (req, res) => {
     const normalizedEmail = email ? email.toLowerCase().trim() : '';
     let user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
-    // Auto-seed default admin accounts on fresh deployment if missing
-    if (!user && (normalizedEmail === 'superadmin@aaaconsultancy.com' || normalizedEmail === 'admin@aaaconsultancy.com')) {
+    const DEMO_ACCOUNTS = {
+      'superadmin@aaaconsultancy.com': { fullName: 'John SuperAdmin', role: 'super_admin' },
+      'admin@aaaconsultancy.com': { fullName: 'Sarah Admin', role: 'admin' },
+      'agent@aaaconsultancy.com': { fullName: 'David Consultant', role: 'consultant' },
+      'operations@aaaconsultancy.com': { fullName: 'Mark Operations', role: 'operations' },
+      'marketing@aaaconsultancy.com': { fullName: 'Jessica Marketing', role: 'marketing' },
+      'finance@aaaconsultancy.com': { fullName: 'Emily Finance', role: 'finance' }
+    };
+
+    // Auto-seed default accounts on fresh deployment or demo click if missing
+    if (!user && DEMO_ACCOUNTS[normalizedEmail]) {
       try {
         const salt = await bcrypt.genSalt(10);
         const defaultHash = await bcrypt.hash('password123', salt);
+        const demoConfig = DEMO_ACCOUNTS[normalizedEmail];
         user = await prisma.user.create({
           data: {
             email: normalizedEmail,
             password: defaultHash,
-            fullName: normalizedEmail.includes('superadmin') ? 'Super Admin' : 'Admin',
-            role: normalizedEmail.includes('superadmin') ? 'super_admin' : 'admin'
+            fullName: demoConfig.fullName,
+            role: demoConfig.role
           }
         });
         console.log(`[Auto-Seed] Initialized account: ${normalizedEmail}`);
@@ -37,7 +47,22 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    let isMatch = await bcrypt.compare(password, user.password);
+
+    // If demo account password changed, auto-sync for demo access
+    if (!isMatch && DEMO_ACCOUNTS[normalizedEmail] && password === 'password123') {
+      try {
+        const salt = await bcrypt.genSalt(10);
+        const newHash = await bcrypt.hash('password123', salt);
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { password: newHash }
+        });
+        isMatch = true;
+      } catch (e) {
+        console.warn('[Auto-Sync Warning]:', e.message);
+      }
+    }
 
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });

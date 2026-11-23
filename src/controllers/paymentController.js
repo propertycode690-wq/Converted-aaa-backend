@@ -413,11 +413,11 @@ const createRefundRequest = async (req, res) => {
       const crmRefundUrl = `${frontendUrl}/#/super_admin/finance`;
       const dateSubmittedFormatted = new Date().toLocaleDateString('en-GB');
 
-      // Email 1: Send alert to client@aaabusinessconsultancy.com
+      // Email 1: Send alert to contact@kiaantechnology.com
       const adminEmailHtml = `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
           <div style="text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
-            <h2 style="color: #051A3B; margin: 0;">AAA Business Consultancy</h2>
+            <h2 style="color: #051A3B; margin: 0;">KIAAN TECHNOLOGIES</h2>
             <p style="color: #dc2626; font-weight: 800; margin: 4px 0 0; font-size: 14px;">🚨 ALERT: New Refund Claim Submitted</p>
           </div>
           <p style="font-size: 15px; color: #1e293b;">A new 100% Money-Back Guarantee refund claim has been submitted on the Client Portal.</p>
@@ -441,7 +441,7 @@ const createRefundRequest = async (req, res) => {
       const clientEmailHtml = `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
           <div style="text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
-            <h2 style="color: #051A3B; margin: 0;">AAA Business Consultancy</h2>
+            <h2 style="color: #051A3B; margin: 0;">KIAAN TECHNOLOGIES</h2>
             <p style="color: #C59B27; font-weight: 700; margin: 4px 0 0; font-size: 14px;">Official Guarantee Refund Claim Acknowledgment</p>
           </div>
           <p style="font-size: 15px;">Dear <strong>${clientName}</strong>,</p>
@@ -461,7 +461,7 @@ const createRefundRequest = async (req, res) => {
       
       await Promise.allSettled([
         sendEmail({
-          to: 'client@aaabusinessconsultancy.com',
+          to: 'contact@kiaantechnology.com',
           subject: `🚨 Alert: New Refund Claim Submitted by ${clientName} (€${refundAmount})`,
           html: adminEmailHtml
         }).then(res => console.log(`[Refund Email] Admin email sent:`, res))
@@ -469,7 +469,7 @@ const createRefundRequest = async (req, res) => {
 
         clientEmail ? sendEmail({
           to: clientEmail,
-          subject: `🛡️ Refund Claim Received (#${refund.id.substring(0, 8)}) - AAA Business Consultancy`,
+          subject: `🛡️ Refund Claim Received (#${refund.id.substring(0, 8)}) - KIAAN TECHNOLOGIES`,
           html: clientEmailHtml
         }).then(res => console.log(`[Refund Email] Client receipt email sent to ${clientEmail}:`, res))
           .catch(err => console.error('[BG-Email] Client refund receipt email failed:', err.message)) : Promise.resolve()
@@ -565,7 +565,7 @@ const updateRefundStatus = async (req, res) => {
       const receiptHtml = `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; color: #2d3748; background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 24px; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px;">
-            <h2 style="color: #051A3B; margin: 0; font-size: 24px;">AAA Business Consultancy</h2>
+            <h2 style="color: #051A3B; margin: 0; font-size: 24px;">KIAAN TECHNOLOGIES</h2>
             <p style="color: #C59B27; font-size: 14px; font-weight: 700; margin: 4px 0 0;">Official Refund Confirmation & Payment Receipt</p>
           </div>
           
@@ -588,7 +588,7 @@ const updateRefundStatus = async (req, res) => {
           </div>
 
           <p style="font-size: 13px; color: #64748b; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 12px; text-align: center;">
-            This is an automated financial confirmation from AAA Business Consultancy LLC.
+            This is an automated financial confirmation from KIAAN TECHNOLOGIES LLC.
           </p>
         </div>
       `;
@@ -1006,7 +1006,7 @@ const createStripeCheckoutSession = async (req, res) => {
         resolvedPackageName = 'Professional Case Assessment';
       } else {
         try {
-          const dbPkg = await prisma.package.findFirst({
+          const pkgModel = prisma.relocationPackage || prisma.package; const dbPkg = pkgModel && await pkgModel.findFirst({
             where: {
               OR: [
                 { id: pidStr },

@@ -131,6 +131,18 @@ exports.handleMetaWebhook = async (req, res) => {
           }
 
           console.log(`Enqueuing WhatsApp message from ${phone} (${name}): ${message}`);
+          try {
+            await prisma.whatsAppMarketingMessage.create({
+              data: {
+                customerPhone: phone,
+                customerName: (name && name !== 'Applicant') ? name : phone,
+                direction: 'INBOUND',
+                content: message,
+                status: 'DELIVERED',
+                metaMessageId: messageId
+              }
+            });
+          } catch (e) {}
           await communicationsQueue.add('process-meta-message', {
             phone,
             name,

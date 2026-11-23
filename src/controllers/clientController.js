@@ -5,10 +5,23 @@ const { JWT_SECRET } = require('../config/jwt');
 
 const getClients = async (req, res) => {
   try {
+    let whereClause = {};
+    if (req.user && req.user.role === 'client') {
+      whereClause = { id: req.user.id };
+    } else if (req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager')) {
+      whereClause = {
+        OR: [
+          { assignedToId: req.user.id },
+          { assignedHandlerId: req.user.id }
+        ]
+      };
+    }
+
     // 1. Fetch lightweight sorted client IDs (sorts only UUIDs to prevent MySQL sort_buffer_size overflow)
     let clientIds = [];
     try {
       clientIds = await prisma.client.findMany({
+        where: whereClause,
         select: { id: true },
         orderBy: { createdAt: 'desc' }
       });
@@ -74,6 +87,54 @@ const getClients = async (req, res) => {
   }
 };
 
+const getClientById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const client = await prisma.client.findUnique({
+      where: { id },
+      include: {
+        assignedTo: { select: { fullName: true } },
+        applicationCycles: true
+      }
+    });
+
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found.' });
+    }
+
+    if (req.user && req.user.role === 'client') {
+      if (client.id !== req.user.id) {
+        return res.status(403).json({ message: 'Access denied. You can only view your own client record.' });
+      }
+    } else if (req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager')) {
+      const isAssigned = client.assignedToId === req.user.id || client.assignedHandlerId === req.user.id;
+      if (!isAssigned) {
+        return res.status(403).json({ message: 'Access denied. You can only view clients assigned to you.' });
+      }
+    }
+
+    const finalClientCode = client.clientCode || (client.lead && client.lead.clientCode) || `CID-12001`;
+
+    res.json({
+      ...client,
+      onboardingDate: client.createdAt,
+      assignedAt: client.assignedAt || client.createdAt,
+      name: `${client.firstName} ${client.lastName}`,
+      serviceId: client.serviceType,
+      assignedConsultantName: client.assignedTo?.fullName,
+      assignedConsultantId: client.assignedToId,
+      hasCredentials: !!client.password,
+      clientCode: finalClientCode,
+      displayId: finalClientCode,
+      comments: Array.isArray(client.caseComments) ? client.caseComments : [],
+      applicationCycles: client.applicationCycles || []
+    });
+  } catch (error) {
+    console.error('Error fetching client by id:', error);
+    res.status(500).json({ message: 'Server error fetching client', error: error.message });
+  }
+};
+
 const createClient = async (req, res) => {
   try {
     const { 
@@ -84,7 +145,8 @@ const createClient = async (req, res) => {
     } = req.body;
     
     // Frontend sometimes sends assignedConsultantId instead of assignedToId
-    const finalAssignedTo = assignedToId || assignedConsultantId;
+    const isScopedStaff = req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager');
+    const finalAssignedTo = isScopedStaff ? req.user.id : (assignedToId || assignedConsultantId);
 
     // Fetch dependentsDetails from lead if leadId is passed
     let fetchedDependentsDetails = null;
@@ -123,7 +185,7 @@ const createClient = async (req, res) => {
         nationality: nationality || client.nationality,
         passportNumber: passportNumber || client.passportNumber,
         serviceType: serviceType || serviceId || client.serviceType,
-        assignedToId: finalAssignedTo || client.assignedToId,
+        assignedToId: isScopedStaff ? client.assignedToId : (finalAssignedTo || client.assignedToId),
         packageId: packageId || client.packageId,
         applicantsCount: applicantsCount ? String(applicantsCount) : client.applicantsCount,
         dependentsDetails: finalDeps !== undefined && finalDeps !== null ? finalDeps : client.dependentsDetails,
@@ -245,6 +307,28 @@ const createClient = async (req, res) => {
 const updateClientStatus = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const existingClient = await prisma.client.findUnique({
+      where: { id },
+      select: { id: true, assignedToId: true, assignedHandlerId: true }
+    });
+
+    if (!existingClient) {
+      return res.status(404).json({ message: 'Client not found.' });
+    }
+
+    if (req.user && req.user.role === 'client') {
+      return res.status(403).json({ message: 'Access denied. Clients cannot update workflow status.' });
+    }
+
+    const isScopedStaff = req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager');
+    if (isScopedStaff) {
+      const isAssigned = existingClient.assignedToId === req.user.id || existingClient.assignedHandlerId === req.user.id;
+      if (!isAssigned) {
+        return res.status(403).json({ message: 'Access denied. You can only update status for clients assigned to you.' });
+      }
+    }
+
     const { status, visaStatus, nextFollowUpDate, documentUploadAllowed, packageId, packageType } = req.body;
     
     const data = {};
@@ -307,7 +391,7 @@ const updateClientStatus = async (req, res) => {
                 <p>Access your portal here: <a href="${portalUrl}" style="color: #4f46e5; font-weight: bold;">Client Portal Login</a></p>
                 <br>
                 <p>Best regards,</p>
-                <p><b>AAA Business Consultancy Team</b></p>
+                <p><b>KIAAN TECHNOLOGIES Team</b></p>
               </div>
             `
           }).catch(err => console.error('[BG-Email] Additional docs email failed:', err.message));
@@ -335,7 +419,7 @@ const updateClientStatus = async (req, res) => {
         const html = `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; color: #2d3748;">
             <div style="text-align: center; margin-bottom: 24px;">
-              <h2 style="color: #4f46e5; margin: 0;">AAA Business Consultancy</h2>
+              <h2 style="color: #4f46e5; margin: 0;">KIAAN TECHNOLOGIES</h2>
               <p style="color: #718096; font-size: 14px; margin: 4px 0 0;">Enterprise IT & Software Engineering</p>
             </div>
             <h3 style="color: #10b981; border-bottom: 1px solid #edf2f7; padding-bottom: 10px;">Translation Completed Successfully! 🎉</h3>
@@ -434,11 +518,29 @@ const updateClientStatus = async (req, res) => {
 const selectPackage = async (req, res) => {
   try {
     const { id } = req.params;
-    const { packageId, status, visaStatus } = req.body;
 
-    if (req.user.role === 'client' && req.user.id !== id) {
+    const existingClient = await prisma.client.findUnique({
+      where: { id },
+      select: { id: true, assignedToId: true, assignedHandlerId: true }
+    });
+
+    if (!existingClient) {
+      return res.status(404).json({ message: 'Client not found.' });
+    }
+
+    if (req.user && req.user.role === 'client' && req.user.id !== id) {
       return res.status(403).json({ message: 'Access denied. You cannot select packages for other clients.' });
     }
+
+    const isScopedStaff = req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager');
+    if (isScopedStaff) {
+      const isAssigned = existingClient.assignedToId === req.user.id || existingClient.assignedHandlerId === req.user.id;
+      if (!isAssigned) {
+        return res.status(403).json({ message: 'Access denied. You can only select packages for clients assigned to you.' });
+      }
+    }
+
+    const { packageId, status, visaStatus } = req.body;
 
     const client = await prisma.client.update({
       where: { id },
@@ -662,6 +764,24 @@ const updateClientDependents = async (req, res) => {
 const submitGoogleReviewStatus = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const existingClient = await prisma.client.findUnique({
+      where: { id },
+      select: { id: true, assignedToId: true, assignedHandlerId: true }
+    });
+
+    if (!existingClient) {
+      return res.status(404).json({ message: 'Client not found.' });
+    }
+
+    const isScopedStaff = req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager');
+    if (isScopedStaff) {
+      const isAssigned = existingClient.assignedToId === req.user.id || existingClient.assignedHandlerId === req.user.id;
+      if (!isAssigned) {
+        return res.status(403).json({ message: 'Access denied. You can only update review status for clients assigned to you.' });
+      }
+    }
+
     const { googleReviewSubmitted } = req.body;
 
     const client = await prisma.client.update({
@@ -685,6 +805,27 @@ const submitGoogleReviewStatus = async (req, res) => {
 const updateClient = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const existingClient = await prisma.client.findUnique({
+      where: { id },
+      select: { id: true, assignedToId: true, assignedHandlerId: true }
+    });
+
+    if (!existingClient) {
+      return res.status(404).json({ message: 'Client not found.' });
+    }
+
+    if (req.user && req.user.role === 'client') {
+      if (req.user.id !== id) {
+        return res.status(403).json({ message: 'Access denied. You cannot modify other client records.' });
+      }
+    } else if (req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager')) {
+      const isAssigned = existingClient.assignedToId === req.user.id || existingClient.assignedHandlerId === req.user.id;
+      if (!isAssigned) {
+        return res.status(403).json({ message: 'Access denied. You can only update clients assigned to you.' });
+      }
+    }
+
     const {
       assignedHandlerId,
       assignedHandlerName,
@@ -706,15 +847,19 @@ const updateClient = async (req, res) => {
     // Build safe update payload — never touch password/credentials
     const data = {};
 
-    // Handler (operations staff) assignment
-    if (assignedHandlerId !== undefined) data.assignedHandlerId = assignedHandlerId || null;
-    if (assignedHandlerName !== undefined) data.assignedHandlerName = assignedHandlerName || null;
+    const isScopedStaff = req.user && (req.user.role === 'consultant' || req.user.role === 'agent' || req.user.role === 'case_manager');
 
-    // Consultant assignment
-    const finalConsultant = assignedToId || assignedConsultantId;
-    if (finalConsultant !== undefined) {
-      data.assignedToId = finalConsultant || null;
-      if (finalConsultant) data.assignedAt = new Date();
+    // Handler (operations staff) assignment - restricted to administrative/operations managers
+    if (!isScopedStaff) {
+      if (assignedHandlerId !== undefined) data.assignedHandlerId = assignedHandlerId || null;
+      if (assignedHandlerName !== undefined) data.assignedHandlerName = assignedHandlerName || null;
+
+      // Consultant assignment - restricted to administrative managers
+      const finalConsultant = assignedToId || assignedConsultantId;
+      if (finalConsultant !== undefined) {
+        data.assignedToId = finalConsultant || null;
+        if (finalConsultant) data.assignedAt = new Date();
+      }
     }
 
     // Case comments — accept either field name from frontend
@@ -820,6 +965,7 @@ const sendRebookLink = async (req, res) => {
 
 module.exports = { 
   getClients, 
+  getClientById,
   createClient, 
   updateClient,
   updateClientStatus, 

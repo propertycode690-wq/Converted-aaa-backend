@@ -1061,3 +1061,104 @@ model AiDailyMetric {
   @@map("ai_daily_metrics")
 }
 
+// ==========================================
+// WHATSAPP MARKETING & AUTOMATION MODULE (ISOLATED)
+// ==========================================
+
+model WhatsAppMarketingCampaign {
+  id              String    @id @default(uuid())
+  tenantId        String    @default("default") @db.VarChar(191)
+  name            String    @db.VarChar(191)
+  templateName    String    @db.VarChar(191)
+  templateLanguage String   @default("en") @db.VarChar(10)
+  audienceType    String    @default("ALL_LEADS") @db.VarChar(50) // ALL_LEADS, CLIENTS, CSV, FILTERED
+  status          String    @default("DRAFT") @db.VarChar(50) // DRAFT, SCHEDULED, PROCESSING, COMPLETED, PAUSED, CANCELLED
+  scheduledAt     DateTime?
+  totalRecipients Int       @default(0)
+  sentCount       Int       @default(0)
+  deliveredCount  Int       @default(0)
+  readCount       Int       @default(0)
+  repliedCount    Int       @default(0)
+  failedCount     Int       @default(0)
+  variables       Json?
+  createdById     String?   @db.VarChar(191)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  recipients      WhatsAppMarketingRecipient[]
+
+  @@map("whatsapp_marketing_campaigns")
+  @@index([status])
+  @@index([createdAt])
+}
+
+model WhatsAppMarketingRecipient {
+  id           String    @id @default(uuid())
+  campaignId   String    @db.VarChar(191)
+  phone        String    @db.VarChar(50)
+  name         String?   @db.VarChar(191)
+  status       String    @default("QUEUED") @db.VarChar(50) // QUEUED, SENT, DELIVERED, READ, REPLIED, FAILED, OPTED_OUT
+  messageId    String?   @db.VarChar(191)
+  errorMessage String?   @db.Text
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  readAt       DateTime?
+  repliedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  campaign     WhatsAppMarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("whatsapp_marketing_recipients")
+  @@index([campaignId])
+  @@index([phone])
+  @@index([status])
+}
+
+model WhatsAppDripWorkflow {
+  id             String   @id @default(uuid())
+  tenantId       String   @default("default") @db.VarChar(191)
+  title          String   @db.VarChar(191)
+  triggerType    String   @default("LEAD_CREATED") @db.VarChar(50) // LEAD_CREATED, STAGE_CHANGED, TAG_ADDED, BIRTHDAY, ANNIVERSARY
+  status         String   @default("ACTIVE") @db.VarChar(50) // ACTIVE, PAUSED
+  steps          Json?    // Array of steps: [{ day: 0, delayHours: 0, template: 'welcome_template', action: 'SEND_TEMPLATE' }]
+  exitOnReply    Boolean  @default(true)
+  totalEnrolled  Int      @default(0)
+  totalCompleted Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("whatsapp_drip_workflows")
+}
+
+model WhatsAppMarketingMessage {
+  id            String   @id @default(uuid())
+  tenantId      String   @default("default") @db.VarChar(191)
+  senderPhone   String?  @db.VarChar(50)
+  customerPhone String   @db.VarChar(50)
+  customerName  String?  @db.VarChar(191)
+  direction     String   @default("OUTBOUND") @db.VarChar(20) // INBOUND, OUTBOUND
+  messageType   String   @default("text") @db.VarChar(50) // text, template, image, document
+  content       String   @db.Text
+  templateName  String?  @db.VarChar(191)
+  status        String   @default("SENT") @db.VarChar(50) // SENT, DELIVERED, READ, FAILED
+  aiGenerated   Boolean  @default(false)
+  metaMessageId String?  @db.VarChar(191)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("whatsapp_marketing_messages")
+  @@index([customerPhone])
+  @@index([createdAt])
+}
+
+model WhatsAppOptOut {
+  id        String   @id @default(uuid())
+  phone     String   @unique @db.VarChar(50)
+  reason    String?  @db.VarChar(191)
+  createdAt DateTime @default(now())
+
+  @@map("whatsapp_opt_outs")
+}
+
+

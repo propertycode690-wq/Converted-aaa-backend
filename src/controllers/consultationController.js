@@ -893,7 +893,7 @@ async function sendConsultationNotifications(consultation) {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const rescheduleUrl = `${frontendUrl}/#/public/lead-form?reschedule=true&consultationId=${consultation.id}`;
     const cancelUrl = `${frontendUrl}/#/public/lead-form?cancel=true&consultationId=${consultation.id}`;
-    const packagesUrl = "https://aaabusinessconsultancy.com/services-and-packages/";
+    const packagesUrl = "https://kiaantechnology.com/services-and-packages/";
   } catch (err) {
     console.error('[NOTIFICATIONS] Error in sendConsultationNotifications:', err);
   }

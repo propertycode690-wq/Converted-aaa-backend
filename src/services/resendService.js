@@ -30,7 +30,7 @@ const sendBookingLinkEmail = async (toEmail, firstName) => {
     <html>
       <head>
         <meta charset="utf-8">
-        <title>AAA Business Consultancy</title>
+        <title>KIAAN TECHNOLOGIES</title>
         <style>
           body {
             font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -173,12 +173,12 @@ const sendBookingLinkEmail = async (toEmail, firstName) => {
             </div>
             
             <p>If you have any questions, feel free to reply directly to this email.</p>
-            <p>Best regards,<br><strong>AAA Business Consultancy Team</strong></p>
+            <p>Best regards,<br><strong>KIAAN TECHNOLOGIES Team</strong></p>
           </div>
           <div class="footer">
-            © 2026 AAA Business Consultancy LLC. All rights reserved.<br>
+            © 2026 KIAAN TECHNOLOGIES LLC. All rights reserved.<br>
             Business Village, Block B, 4th Floor, Office F09, Deira, Dubai, UAE<br>
-            <a href="https://aaabusinessconsultancy.com">Visit our website</a>
+            <a href="https://kiaantechnology.com">Visit our website</a>
           </div>
         </div>
       </body>
@@ -188,7 +188,7 @@ const sendBookingLinkEmail = async (toEmail, firstName) => {
   if (resend) {
     try {
       const data = await resend.emails.send({
-        from: 'AAA Business Consultancy <onboarding@resend.dev>',
+        from: 'KIAAN TECHNOLOGIES <onboarding@resend.dev>',
         to: toEmail,
         subject: subject,
         html: htmlContent,

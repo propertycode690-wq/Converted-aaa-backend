@@ -19,7 +19,7 @@ const generateAiSummary = async (client, communications = [], lead = null) => {
 
   if (isRealApiKey) {
     try {
-      const prompt = `You are an AI assistant for Wael Madi, CEO of AAA Business Consultancy LLC.
+      const prompt = `You are an AI assistant for Wael Madi, CEO of KIAAN TECHNOLOGIES LLC.
 Analyze this client record and generate a structured JSON summary.
 Client Name: ${name}
 Service: ${service}
@@ -648,7 +648,7 @@ exports.getCeoBrief = async (req, res) => {
 
     if (isRealApiKey) {
       try {
-        const prompt = `You are the AI CEO Assistant for Wael Madi, CEO of AAA Business Consultancy LLC (Spanish Immigration & Sworn Translation Services).
+        const prompt = `You are the AI CEO Assistant for Wael Madi, CEO of KIAAN TECHNOLOGIES LLC (Spanish Immigration & Sworn Translation Services).
 Generate a professional, motivating, and detailed daily morning briefing in the tone of "Good morning, Wael."
 Base it on the following live CRM metrics:
 - Total registered clients: ${totalClientsCount} (New today: ${todayClientsCount})

@@ -39,8 +39,8 @@ router.put('/:id/milestones/:milestoneId', rbacMiddleware(['admin', 'super_admin
 router.delete('/:id/milestones/:milestoneId', rbacMiddleware(['admin', 'super_admin']), deleteMilestone);
 
 // Tasks
-router.post('/:id/tasks', createTask);
-router.put('/:id/tasks/:taskId', updateTask);
+router.post('/:id/tasks', rbacMiddleware(['admin', 'super_admin', 'consultant', 'operations']), createTask);
+router.put('/:id/tasks/:taskId', rbacMiddleware(['admin', 'super_admin', 'consultant', 'operations']), updateTask);
 router.delete('/:id/tasks/:taskId', rbacMiddleware(['admin', 'super_admin', 'consultant', 'operations']), deleteTask);
 
 // Time Logs

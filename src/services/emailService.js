@@ -15,6 +15,46 @@ const SMTP_FROM = process.env.SMTP_FROM || `"Kiaan Technology" <info@kiaantechno
 let resendClient = null;
 let transporter = null;
 
+async function getDynamicTransporter() {
+  try {
+    const setting = await prisma.companySetting.findFirst();
+    const integrations = setting?.customizationSettings?.integrations;
+    const brevo = integrations?.socialPlatforms?.brevo || integrations?.emailProviders?.brevo || integrations?.socialPlatforms?.email;
+
+    if (brevo && brevo.smtpPass && (brevo.smtpUser || brevo.email)) {
+      const host = brevo.smtpHost || 'smtp-relay.brevo.com';
+      const port = parseInt(brevo.smtpPort || 587, 10);
+      const user = brevo.smtpUser || brevo.email;
+      const pass = brevo.smtpPass;
+      const fromName = brevo.fromName || 'Kiaan Technologies';
+      const fromEmail = brevo.fromEmail || user;
+      const fromStr = `"${fromName}" <${fromEmail}>`;
+
+      const t = nodemailer.createTransport({
+        host,
+        port,
+        secure: port === 465,
+        auth: { user, pass },
+        tls: { rejectUnauthorized: false },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000
+      });
+
+      return { transporter: t, from: fromStr };
+    }
+  } catch (err) {
+    console.warn('[emailService] Dynamic Brevo transporter check:', err.message);
+  }
+
+  if (transporter) {
+    return { transporter, from: SMTP_FROM };
+  }
+
+  return null;
+}
+
+
 const getCleanPackageName = (rawPackageName, serviceType) => {
   const input = String(rawPackageName || serviceType || '').trim();
   if (!input) return 'Custom Software & IT Services';
@@ -108,88 +148,69 @@ if (!resendClient && !transporter) {
  * @returns {Promise<{success: boolean, messageId?: string, dryRun?: boolean}>}
  */
 exports.sendEmail = async ({ to, subject, html, text }) => {
+  // Check for dynamic Brevo / SMTP transporter
+  const activeSmtp = await getDynamicTransporter();
+
+  if (activeSmtp) {
+    try {
+      const sendPromise = activeSmtp.transporter.sendMail({
+        from: activeSmtp.from,
+        to,
+        subject,
+        text: text || html.replace(/<[^>]*>/g, ''),
+        html
+      });
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('SMTP sendMail timed out after 12s')), 12000)
+      );
+
+      const info = await Promise.race([sendPromise, timeoutPromise]);
+      console.log(`[Brevo/SMTP] Email sent successfully to ${to}. Message ID: ${info.messageId}`);
+      return { success: true, messageId: info.messageId, dryRun: false };
+    } catch (error) {
+      console.error(`[Brevo/SMTP Error] Failed to send email to ${to}:`, error.message || error);
+    }
+  }
+
   const currentKey = process.env.RESEND_API_KEY;
   if (!resendClient && currentKey && currentKey !== 'your_resend_api_key_here') {
-    console.log('Email Service: Dynamically initializing Resend client');
     resendClient = new Resend(currentKey);
   }
 
   if (resendClient) {
     try {
-      const rawFrom = process.env.RESEND_FROM || process.env.RESEND_FROM_EMAIL || process.env.SMTP_FROM || 'client@aaabusinessconsultancy.com';
+      const rawFrom = process.env.RESEND_FROM || process.env.RESEND_FROM_EMAIL || process.env.SMTP_FROM || 'contact@kiaantechnology.com';
       let cleanFrom = rawFrom.replace(/\\"/g, '"');
       if (!cleanFrom.includes('<')) {
-        cleanFrom = `AAA Business Consultancy <${cleanFrom}>`;
+        cleanFrom = `KIAAN TECHNOLOGIES <${cleanFrom}>`;
       }
       const response = await resendClient.emails.send({
         from: cleanFrom,
         to,
         subject,
         html,
-        text: text || html.replace(/<[^>]*>/g, '') // Basic HTML strip for fallback text
+        text: text || html.replace(/<[^>]*>/g, '')
       });
 
-      if (response.error) {
-        throw new Error(response.error.message);
-      }
-
+      if (response.error) throw new Error(response.error.message);
       console.log(`Email sent successfully via Resend to ${to}. Message ID: ${response.data?.id}`);
       return { success: true, messageId: response.data?.id, dryRun: false };
     } catch (error) {
       console.error(`Failed to send email via Resend to ${to}:`, error.message || error);
-      if (transporter) {
-        console.log(`Resend dispatch failed for ${to}. Attempting automatic SMTP fallback...`);
-        try {
-          const info = await transporter.sendMail({
-            from: SMTP_FROM,
-            to,
-            subject,
-            text: text || html.replace(/<[^>]*>/g, ''),
-            html
-          });
-          console.log(`Email sent successfully via SMTP fallback to ${to}. Message ID: ${info.messageId}`);
-          return { success: true, messageId: info.messageId, dryRun: false };
-        } catch (smtpErr) {
-          console.error(`SMTP fallback also failed for ${to}:`, smtpErr.message || smtpErr);
-          throw smtpErr;
-        }
-      }
-      throw error;
     }
-  } else if (transporter) {
-    try {
-      const sendPromise = transporter.sendMail({
-        from: SMTP_FROM,
-        to,
-        subject,
-        text: text || html.replace(/<[^>]*>/g, ''), // Basic HTML strip for fallback text
-        html
-      });
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('SMTP sendMail timed out after 10s')), 10000)
-      );
-
-      const info = await Promise.race([sendPromise, timeoutPromise]);
-
-      console.log(`Email sent successfully via SMTP to ${to}. Message ID: ${info.messageId}`);
-      return { success: true, messageId: info.messageId, dryRun: false };
-    } catch (error) {
-      console.error(`Failed to send email via SMTP to ${to}:`, error);
-      throw error;
-    }
-  } else {
-    // Sandbox / Dry-Run Log
-    const fromAddress = RESEND_FROM || SMTP_FROM;
-    console.log('------------------------------------------------------------');
-    console.log(`[EMAIL DRY-RUN (NOT CONFIGURED)]`);
-    console.log(`From:    ${fromAddress}`);
-    console.log(`To:      ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Body (Preview): ${html.substring(0, 150)}...`);
-    console.log('------------------------------------------------------------');
-    return { success: true, messageId: `dryrun-${Date.now()}`, dryRun: true };
   }
+
+  // Sandbox / Dry-Run Log
+  const fromAddress = activeSmtp ? activeSmtp.from : (SMTP_FROM || 'contact@kiaantechnology.com');
+  console.log('------------------------------------------------------------');
+  console.log(`[EMAIL DRY-RUN / LOG (Configure Brevo in Integrations to send live)]`);
+  console.log(`From:    ${fromAddress}`);
+  console.log(`To:      ${to}`);
+  console.log(`Subject: ${subject}`);
+  console.log(`Body (Preview): ${html.substring(0, 150)}...`);
+  console.log('------------------------------------------------------------');
+  return { success: true, messageId: `dryrun-${Date.now()}`, dryRun: true };
 };
 
 /**
@@ -268,12 +289,12 @@ exports.sendVisaChecklist = async (to, clientName, serviceType, paymentData = {}
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
-        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
+        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">KIAAN TECHNOLOGIES</h2>
         <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Custom Software & Enterprise IT Solutions Services</p>
       </div>
 
       <div style="padding: 28px;">
-        <h3 style="color: #2d3748; margin-top: 0; font-size: 18px;">🎉 Payment Confirmed - AAA Business Consultancy</h3>
+        <h3 style="color: #2d3748; margin-top: 0; font-size: 18px;">🎉 Payment Confirmed - KIAAN TECHNOLOGIES</h3>
         <p style="color: #4a5568; line-height: 1.6;">Dear <b>${clientName}</b>,</p>
         <p style="color: #4a5568; line-height: 1.6;">Thank you! We have successfully received your payment. Here are your transaction details:</p>
 
@@ -301,19 +322,19 @@ exports.sendVisaChecklist = async (to, clientName, serviceType, paymentData = {}
           </div>
         </div>
 
-        <p style="color: #4a5568; margin-top: 24px; line-height: 1.6;">Thank you for choosing AAA Business Consultancy! 🇪🇸</p>
-        <p style="color: #2d3748; margin-bottom: 0;"><b>Best regards,</b><br/>AAA Business Consultancy Team</p>
+        <p style="color: #4a5568; margin-top: 24px; line-height: 1.6;">Thank you for choosing KIAAN TECHNOLOGIES! 🇪🇸</p>
+        <p style="color: #2d3748; margin-bottom: 0;"><b>Best regards,</b><br/>KIAAN TECHNOLOGIES Team</p>
       </div>
 
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-        © 2026 AAA Business Consultancy · All rights reserved
+        © 2026 KIAAN TECHNOLOGIES · All rights reserved
       </div>
     </div>
   `;
 
   return exports.sendEmail({
     to,
-    subject: `🎉 Payment Confirmed - AAA Business Consultancy (${clientCode})`,
+    subject: `🎉 Payment Confirmed - KIAAN TECHNOLOGIES (${clientCode})`,
     html
   });
 };
@@ -324,20 +345,20 @@ exports.sendVisaChecklist = async (to, clientName, serviceType, paymentData = {}
 exports.sendAppointmentConfirmationEmail = async ({ to, firstName, serviceType }) => {
   const { getServiceTitleInfo } = require('../utils/serviceTitleHelper');
   const svcInfo = getServiceTitleInfo(serviceType);
-  const packagesUrl = "https://aaabusinessconsultancy.com/services-and-packages/";
+  const packagesUrl = "https://kiaantechnology.com/services-and-packages/";
   const whatsappUrl = "https://wa.me/971509554142";
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
-        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
+        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">KIAAN TECHNOLOGIES</h2>
         <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">${svcInfo.categoryName}</p>
       </div>
 
       <div style="padding: 28px;">
         <h3 style="color: #2d3748; margin-top: 0; font-size: 18px;">${svcInfo.icon} Inquiry Received</h3>
         <p style="color: #4a5568; line-height: 1.6;">Dear <b>${firstName || 'Client'}</b>,</p>
-        <p style="color: #4a5568; line-height: 1.6;">Thank you for reaching out to <b>AAA Business Consultancy</b> regarding <b>${svcInfo.title}</b>. We have successfully received your information.</p>
+        <p style="color: #4a5568; line-height: 1.6;">Thank you for reaching out to <b>KIAAN TECHNOLOGIES</b> regarding <b>${svcInfo.title}</b>. We have successfully received your information.</p>
 
         <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin: 20px 0;">
           <h4 style="margin-top: 0; color: #1e293b; font-size: 15px;">📋 Next Steps:</h4>
@@ -358,14 +379,14 @@ exports.sendAppointmentConfirmationEmail = async ({ to, firstName, serviceType }
       </div>
 
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-        © 2026 AAA Business Consultancy · All rights reserved
+        © 2026 KIAAN TECHNOLOGIES · All rights reserved
       </div>
     </div>
   `;
 
   return exports.sendEmail({
     to,
-    subject: `Inquiry Received: ${svcInfo.title} - AAA Business Consultancy ✨`,
+    subject: `Inquiry Received: ${svcInfo.title} - KIAAN TECHNOLOGIES ✨`,
     html
   });
 };
@@ -380,14 +401,14 @@ exports.sendInvoiceNotificationEmail = async ({ to, clientName, amount, discount
   const html = `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
-        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
+        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">KIAAN TECHNOLOGIES</h2>
         <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.85;">Spain Relocation & Visa Legal Services</p>
       </div>
 
       <div style="padding: 28px;">
         <h3 style="color: #1e293b; margin-top: 0; font-size: 18px;">📄 Enterprise IT Software Relocation Invoice & Portal Account</h3>
         <p style="color: #475569; line-height: 1.6;">Dear <b>${clientName}</b>,</p>
-        <p style="color: #475569; line-height: 1.6;">Welcome to AAA Business Consultancy! Your relocation folder has been initialized. Please find your invoice details below:</p>
+        <p style="color: #475569; line-height: 1.6;">Welcome to KIAAN TECHNOLOGIES! Your relocation folder has been initialized. Please find your invoice details below:</p>
 
         <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin: 20px 0;">
           <h4 style="margin-top: 0; color: #1e293b; font-size: 15px;">💳 Invoice Summary:</h4>
@@ -420,14 +441,14 @@ exports.sendInvoiceNotificationEmail = async ({ to, clientName, amount, discount
       </div>
 
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-        © 2026 AAA Business Consultancy · All rights reserved
+        © 2026 KIAAN TECHNOLOGIES · All rights reserved
       </div>
     </div>
   `;
 
   return exports.sendEmail({
     to,
-    subject: `Relocation Invoice & Client Portal Account - AAA Business Consultancy 🇪🇸`,
+    subject: `Relocation Invoice & Client Portal Account - KIAAN TECHNOLOGIES 🇪🇸`,
     html
   });
 };
@@ -464,7 +485,7 @@ exports.sendPackagePaymentConfirmationEmail = async ({ clientId, paymentId }) =>
     const htmlBody = `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
-          <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
+          <h2 style="margin: 0; font-size: 22px; font-weight: 800;">KIAAN TECHNOLOGIES</h2>
           <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.85;">Spain Relocation & Visa Legal Services</p>
         </div>
 
@@ -526,14 +547,14 @@ exports.sendPackagePaymentConfirmationEmail = async ({ clientId, paymentId }) =>
         </div>
 
         <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-          © 2026 AAA Business Consultancy · All rights reserved
+          © 2026 KIAAN TECHNOLOGIES · All rights reserved
         </div>
       </div>
     `;
 
     return exports.sendEmail({
       to: client.email,
-      subject: `Payment Confirmed — ${snapshot.packageName} — AAA Business Consultancy 🎉`,
+      subject: `Payment Confirmed — ${snapshot.packageName} — KIAAN TECHNOLOGIES 🎉`,
       html: htmlBody
     });
   } catch (error) {
@@ -552,14 +573,14 @@ exports.sendPaymentSuccessEmail = async ({ to, clientName, customerId, serviceTy
   const html = `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
-        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
+        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">KIAAN TECHNOLOGIES</h2>
         <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.85;">Certified Sworn Translation & Visa Services</p>
       </div>
 
       <div style="padding: 28px;">
         <h3 style="color: #22c55e; margin-top: 0; font-size: 18px;">🎉 Payment Successful & Receipt Confirmed</h3>
         <p style="color: #475569; line-height: 1.6;">Dear <b>${clientName || 'Valued Client'}</b>,</p>
-        <p style="color: #475569; line-height: 1.6;">Thank you for choosing AAA Business Consultancy. We have successfully received your payment.</p>
+        <p style="color: #475569; line-height: 1.6;">Thank you for choosing KIAAN TECHNOLOGIES. We have successfully received your payment.</p>
 
         <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin: 20px 0;">
           <h4 style="margin-top: 0; color: #1e293b; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">📄 Payment Receipt Details:</h4>
@@ -591,14 +612,14 @@ exports.sendPaymentSuccessEmail = async ({ to, clientName, customerId, serviceTy
       </div>
 
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-        © 2026 AAA Business Consultancy · All rights reserved
+        © 2026 KIAAN TECHNOLOGIES · All rights reserved
       </div>
     </div>
   `;
 
   return exports.sendEmail({
     to,
-    subject: `Payment Confirmed [${customerId || 'Receipt'}] — AAA Business Consultancy 🇪🇸`,
+    subject: `Payment Confirmed [${customerId || 'Receipt'}] — KIAAN TECHNOLOGIES 🇪🇸`,
     html
   });
 };
@@ -608,7 +629,7 @@ exports.sendMeetingCancelledEmail = async ({ to, firstName, date, time, rebookLi
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
-        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
+        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">KIAAN TECHNOLOGIES</h2>
         <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Custom Software & Enterprise IT Solutions Services</p>
       </div>
 
@@ -625,7 +646,7 @@ exports.sendMeetingCancelledEmail = async ({ to, firstName, date, time, rebookLi
       </div>
 
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-        © 2026 AAA Business Consultancy · All rights reserved
+        © 2026 KIAAN TECHNOLOGIES · All rights reserved
       </div>
     </div>
   `;
@@ -641,7 +662,7 @@ exports.sendMeetingRescheduledEmail = async ({ to, firstName, date, time, link, 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <div style="background: linear-gradient(135deg, #0f0c29, #302b63); padding: 24px; text-align: center; color: #ffffff;">
-        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">AAA Business Consultancy</h2>
+        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">KIAAN TECHNOLOGIES</h2>
         <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.8;">Custom Software & Enterprise IT Solutions Services</p>
       </div>
 
@@ -668,7 +689,7 @@ exports.sendMeetingRescheduledEmail = async ({ to, firstName, date, time, link, 
       </div>
 
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-        © 2026 AAA Business Consultancy · All rights reserved
+        © 2026 KIAAN TECHNOLOGIES · All rights reserved
       </div>
     </div>
   `;

@@ -92,21 +92,22 @@ app.use('/api/v1/projects', require('./routes/projectRoutes'));
 app.use('/api/v1/reviews', require('./routes/reviewRoutes'));
 app.use('/api/v1/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/v1/ai-employees', require('./routes/aiEmployeeRoutes'));
+app.use('/api/v1/whatsapp-marketing', require('./routes/whatsappMarketingRoutes'));
 
 // Start Server
 const PORT = Number(process.env.PORT) || 5000;
 
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
-    console.error(`[Server Error] Port ${PORT} is already in use.`);
+    console.error('[Server Error Detail]', err.code, err.message, err.address, err.port);
     process.exit(1);
   } else {
     console.error('[Server Error]', err);
   }
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT} (bound to 0.0.0.0)`);
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
 // Initialize BullMQ Workers safely
@@ -116,6 +117,9 @@ try {
   // Initialize 24/7 Autonomous AI Employee Scheduler
   const aiScheduler = require('./services/aiScheduler');
   aiScheduler.start();
+  // Initialize WhatsApp Marketing Automation Cron Runner
+  const whatsappRunner = require('./services/whatsappAutomationRunner');
+  whatsappRunner.start();
 } catch (err) {
   console.error('[Worker Setup Error]', err.message);
 }
